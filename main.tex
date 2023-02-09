@@ -1,0 +1,75 @@
+%
+% TU/e Style Master Thesis template for LaTeX
+%
+% 2021 Crated by Marko Boon to new corporate identity,
+% Based on a template by Thijs Nugteren and Joos Buijs.
+%
+% THIS IS THE MAIN FILE (i.e. compile this file, compiling the others directly won't work)
+%
+\documentclass[a4paper,10pt,twoside]{book}
+\usepackage{tuethesis2021}
+\usepackage{datetime}
+\usepackage{biblatex}
+\usepackage{booktabs}
+
+% ------------------------ Bibliography ------------------------
+\addbibresource{references.bib}
+
+% ------------------------ Automatic Datetime ------------------------ 
+\newdateformat{monthyear}{\monthname[\THEMONTH] \THEYEAR}
+
+
+% ------------------------ TITLE PAGE ------------------------
+% These commands need to be defined in order to produce a correct and personalized document.
+
+\newcommand{\doctitle}{Towards domain agnostic Wi-Fi CSI gesture classification models through table-to-image preprocessing and reinforcement learning}
+\newcommand{\shortitle}{Domain Agnostic Wi-Fi CSI Gesture Classification}
+\newcommand{\docsubtitle}{Master's Thesis}
+\newcommand{\me}{Yvan Putra Satyawan}
+\newcommand{\version}{Draft version}
+\newcommand{\placeMonthYear}{Eindhoven, \monthyear\today}
+\newcommand{\department}{Department of Mathematics and Computer Science}
+\newcommand{\group}{Interconnected Resource-aware Intelligent Systems Research Group}
+\newcommand{\firstCommitteeMember}{Your First Committee Member} % use all the titles for your committee members!
+\newcommand{\secondCommitteeMember}{Your second Committee Member} % usually the daily supervisor
+\newcommand{\thirdCommitteeMember}{Your Third Committee Member} % usually the external member
+% ------------------------ TITLE PAGE ------------------------
+
+\begin{document}
+% The title page will be inserted automatically, here.
+
+\clearpage
+
+%Sometimes line numbers are nice, uncomment the next line to enable:
+%\linenumbers
+
+\input{chapters/abstract}
+
+\input{chapters/preface}
+
+\tableofcontents
+
+\listoffigures
+
+\listoftables
+
+\lstlistoflistings
+
+\mainmatter
+
+\input{chapters/introduction}
+\input{chapters/literature_review}
+\input{chapters/methodology}
+
+
+
+% \input{chapters/conclusions}
+
+\printbibliography
+
+\appendix
+\addcontentsline{toc}{chapter}{Appendix}
+
+\input{appendices/main}
+
+\end{document}

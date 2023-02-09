@@ -1,0 +1,42 @@
+\chapter{Risk Assessment}
+
+Risks identified for each phase of the plan and mitigation options are investigated in this section.
+Risk mitigation strategies are built from the author's previous experience working in an AI research lab and as a data scientist and software developer in industry.
+Additionally, strategies are also developed from theory learned in his computer science bachelor's.
+
+\paragraph{Initial infrastructure setup}
+During the initial infrastructure setup, the entire pipeline will be developed.
+This includes a modular data-ingest/transformation pipeline and model-building pipeline.
+Risks include data availability/usability and bugs in the data pipeline code.
+Additionally, the model will be completely modular and not prebuilt, increasing the chances of a bug appearing during this building phase but increasing flexibility of the model being investigated.
+
+Data availability/usability refers to the fact that while the data is a public and published dataset, it is nonetheless quite large and it would not be feasible to download the entire dataset and place it on TU/e's HPC server. 
+This means that some way to compress the data must be done.
+It is also possible that the transformed version of the data can be compressed more efficiently and this is what will end up being the dataset we work with for the majority of the project.
+
+The data pipeline is also modular, allowing for data augmentation to be added ``on-the-fly'' instead of being hard-coded.
+This increases flexibility, but introduces the risk of bugs in unexpected circumstances.
+Mitigation factors include having written similar pipelines multiple times in the past and reuse of old, known-good code from the IRIS Seminar project and 2AMM10 Deep Learning course.
+Additionally, a similar approach has been use in previous research that we have completed, and we have significant experience in similarly modular pipelines.
+
+Similarly, the model is built only at run-time, allowing for more flexibility and the possibility to fine-tune the model architecture using hyperparameter optimization techniques.
+This increases the chance that a good model architecture is chosen and strengthens the reasoning behind the chosen model architecture through empirical performance.
+Mitigation factors are the same as for the data pipeline.
+
+\paragraph{Module Integration}
+The most complex part of this infrastructure is to ensure that all modules work well together and there are no bugs in the hand-off step between modules.
+
+To mitigate these factors, we take some advice from Chip Huyen's book Designing Machine Learning Systems \cite{dmlsbook2022}.
+To ensure that errors are not made during this integration, data flow will be closely monitored and visualized at every step through a UI, such that it is easy to see if anything went wrong at any step.
+The application of this will essentially be most of the interim steps being given some sort of output so we can visualize their result and track how data is transformed throughout the entire process.
+
+\paragraph{Parallelization}
+This is potentially unnecessary and may take up time that could be better used elsewhere.
+The idea is essentially that it might make sense to have the reinforcement-learning model and the gesture-classification model run on separate computers and having them communicate through some network.
+
+Mitigation for this being unnecessary is providing only a limited amount of time to do this and the understanding that if this seems too difficult/may take too long, then we will immediately shelf the idea.
+
+\paragraph{General bugs}
+As with any software-based project there will inevitably be bugs in the code.
+Software engineering principle which lead to fewer bugs, such as proper use of debugging tools (but not test suites as we don't believe they will be necessary for a project with a limited scope such as this), will be used throughout work on this thesis.
+Additionally, use of ``magic numbers'' will be limited and as many parameters as appropriate will be assigned from variables.
