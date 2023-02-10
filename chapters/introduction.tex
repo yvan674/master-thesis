@@ -1,55 +1,125 @@
 \chapter{Introduction}\label{chapter:introduction}
 
+\begin{figure}
+	\centering
+	\missingfigure{"Picture of a Phillips Hue Lightbulb"}
+	\caption{A Phillips Hue Lightbulb, one example of an IoT smart lightbulb with an integrated Wi-Fi Radio}
+	\label{fig:phillips-hue-lightbulb}
+\end{figure}
 
-\begin{itemize}
-	\item Developments in IoT applications
-	\item Developments in ubiquitous computing
-	\item Developments in ubiquitous sensing and embedded sensors
-	\item Challenges in a user interface for ubiquitous computing
-	\item Wi-Fi sensing as a potential solution
-\end{itemize}
+In this ever more connected climate that we find ourselves in, IoT devices everywhere are adding little conveniences to our every day lives.
+With IoT devices becoming ever more common and reaching a forecasted 27 billion devices by 2025 \cite{hasan2022state}, the dream of ubiquitous computing and sensing is transitioning from a mere dream to the reality of our every day lives.
+Additionally, approximately 19\% of new devices bought in 2020 also utilize some form of Wi-Fi radio for communications with a forecasted increase to 24\% by 2025.
+
+It is clear that this trend towards integrating computing technology into everyday objects will only accelerate in the future.
+The increased convenience and efficiency may be the biggest boon of such technologies.
+For example, smart thermostats can predict heating requirements and adjust accordingly, leading to lower heating costs in a house while maintaining the convenience of having a well heated space.
+
+With all these connected devices becoming and edge computing ability comes ubiquitous sensing, enabling new modalities of interaction and improving data collection and analytics.
+It is now possible to envision households with complete presence detection coverage, for example, through the use of smart motion sensors, enabling increased efficiency by intelligently identifying which rooms require heating and lighting and which do not.
+Always-on voice control systems, such as Amazon Alexa and Google Assistant speakers are also increasingly common, making a connected AI-assistant only one call away.
+The always-connected nature of these sensors also enable the gathering and analysis of vast amounts of user data, potentially providing valuable insights into various aspects of our lives.
+
+One challenge that has continued to plague ubiquitous devices is the lack of a ubiquitous user interface which does not require input devices.
+It is not too common to use the end device itself as the input.
+Even in the case of voice control systems, a dedicated smart speaker is still required and must be placed in every room from which interaction is desired.
+For example, in the case of smart lights or smart thermostats, the end device would be the light bulbs and heating system, respectively.
+In both cases, a separate control unit, the light switch or thermostat, respectively, is still required.
+
+With these challenges in mind, Wi-Fi-based sensing provides one potential solution.
+Many IoT devices already contain some sort of Wi-Fi radio, such as the Phillips Hue Light bulb in Figure \ref{fig:phillips-hue-lightbulb}, and it would be a rather safe assumption to make that spaces with IoT devices would also have some sort of Wi-Fi infrastructure in place as well.
+With this in mind, the idea of a gesture-based interface based around Wi-Fi becomes rather appealing.
+The use of Channel-State Information (CSI) also enables of finer-grain signals to be extracted from consumer-grade Wi-Fi radios, enough to enable reliable gesture recognition \cite{adib2013see}.
+This method does, though, suffer from the domain-shift problem, achieving the best accuracy only in cases with a prediction model fine-tuned to a specific person and environment is used.
 
 With this thesis, we aim to explore the use of CNN architectures and domain-shift mitigation methods to improve the state-of-the-art in Wi-Fi CSI-based gesture classification.
+Specifically, we will look at using preprocessing methods to transform the input signal from CSI into an image using table-to-image and signal-to-image transformations, the use of traditional signal processing algorithms to process the incoming CSI signal, and the use of Reinforcement Learning (RL) to perform domain auto-labeling and provide the CNN classifier with additional information.
 
 \section{Context and Background}\label{sec:intro-context}
 
-\begin{itemize}
-	\item IoT devices and ubiquitous computing has become quite common and are convenient
-	\item Main issue is how to provide some sort of always-available interface
-	\item Sci-Fi presents gesture-based interfaces, but this requires ubiquitous sensors
-	\item Issue with learning based approaches is that it often suffers from an inability to adapt to domain shifts
-	\item In ubiquitous sensing, minimal setup is required on the user's part, otherwise it won't become mainstream if it is tedious to set up
-	\item Why is Wi-Fi a potential solution to a low-cost ubiquitous sensing device
-	\item 802.11bf, sensing standardization using Wi-Fi shows this might become common in the future and is being taken seriously by multiple large industry stakeholders
-\end{itemize}
+IoT devices are without a doubt increasingly prevalent in everyday life.
+The Atlas building at the Technical University of Eindhoven (TU/e), for example, uses centrally networked lights for all of its lighting fixtures powered through Power over Ethernet (PoE) and this is at least partially credited as a reason the building has the best efficiency of any academic building in Europe when it was constructed \cite{tue2019atlas}.
 
+All over the building, presence detection, in the form of motion detection sensors, is also used to automatically set appropriate lighting levels for each room.
+This is just one example of how ubiquitous computing and sensing has now entered the mainstream and is no longer a dream of a few enthusiasts and IoT evangelists.
+Developments in AI and big data processing has also made the usefulness of ubiquitous computing much more evident, legitimizing its use in everyday objects.
+
+Finally, the deployment of 5G networks in densely populated areas is working towards enabling faster speeds and lower latency, essential in many ubiquitous computing and sensing applications.
+
+With these advances, the question has shifted towards what sort of interface we should utilize to provide an always-available non-intrusive experience for the users.
+One possible solution is gesture-based interfaces.
+With any ubiquitous computing and sensing product, especially in the consumer space, minimal setup on the user's part is desired; otherwise the product will not become something which is widely accepted and used.
+
+Wi-Fi gesture recognition can solve these issues, providing a gesture-based interface requiring potentially zero additional setup requirements.
+As a bonus, this would also be a low-cost solution which many IoT devices already having the necessary hardware for regardless.
+
+There also exists a task group for Wireless Local Area Network (WLAN) sensing, called 802.11bf, within the IEEE 802.11 working group, the group which sets the standards for WLAN, with members from large companies including Huawei, Qualcomm, and Meta \cite{du2022overview}.
+This shows there is genuine interest in the industry to utilize WLAN for these purposes.
+With an approval date set for September 2024, it is clear that WLAN sensing is not just some theoretical possibility confined to a lab, but rather a very real technology that may soon become widespread.
+
+To make such an approach possible, we utilize machine learning (ML) to process the incoming CSI data and classify user gestures.
 Wi-Fi technology, when boiled down, is just a really complex radio and what is radar but a different form of very complex radio.
 It naturally, or not so naturally, follows then, can Wi-Fi be used for remote sensing analogously to radar technology?
 The answer to this question, according to \cite{adib2013see} and \cite{chetty2011through}, the answer is a resounding yes!
 
+However, ML suffers from degraded performance when faced with domain-shifts.
+When dealing with new, unseen users and environments, gesture classification accuracy degrades significantly. \todo{citation needed}
+As such, factors to mitigate this domain-shift problem are required in any implementation outside of a pristine laboratory setting.
+
 \section{Motivation}\label{sec:intro-motivation}
 
-\begin{itemize}
-	\item Potential IoT/smart home applications
-	\item To provide a ubiquitous sensing system which is low-cost and already prevalent in many environments
-	\item To investigate and advance domain-agnostic learning systems
-	\item To further the state-of-the-art for gesture classification
-	\item If 802.11bf comes to fruition, and we want to take advantage of it, we should start now
-\end{itemize}
+There are significant potential commercial and practical benefits to enabling domain-agnostic Wi-Fi gesture classification.
+
+From a commercial perspective, the 802.11bf standard, which standardizes the hardware technology required for Wi-Fi sensing, is on the cusp of being released.
+If we are to take advantage of these new technologies, it is imperative that its practical applications be researched. \todo{I don't like the wording here}
+
+Wi-Fi sensing is also unique in that the hardware for it is already commercially available and widespread, though not necessarily standardized.
+As such, it is in a unique place where it is an almost completely software-based solution for preexisting, mass-adopted hardware enabling completely new modes of interaction.
+This makes it unique and, ultimately, much more commercially desirable as a technology to be adopted.
+
+With respect to domain-agnosticism, the motivating factor is that the largest hurdle for Wi-Fi gesture classification is its loss of performance in new, unseen domains.
+A model that cannot adapt to such issues will inevitably be nonviable for commercial adaptation lest the end-user be required to perform the same gesture hundreds of times in various positions after installing every single smart IoT device.
+
+We also wish to further the state-of-the-art in domain-agnostic models.
+The results of this thesis is not only applicable to the field of Wi-Fi gesture classification.
+Domain-agnostic systems are required for many industry applications, such as [what]. \todo{Figure out what}
+The conclusions of this thesis will hopefully be able to advance the field and provide new insight into what future avenues of research may end up being fruitful.
+
+Finally, a Sci-Fi future where all your devices are controlled through your thoughts might seem like a dream, but in reality, we are not too far from this future.
+The use of Wi-Fi sensing to detect gestures is one step closer to this futuristic dream and in addition to all the potential commercial and practical benefits this technology could bring, the sheer ``coolness'' of the technology should not be underestimated as a motivation to perform research. \todo{A bit less academic, but hopefully just as viable as a motivation}
 
 \section{Problem Statement}\label{sec:intro-problem-statement}
+Models already exist to classify gestures through Wi-Fi CSI data.
+Ideally models are solely influenced by those factors which contribute to the correct classification of the gesture, this is, in reality, not the case.
+These models are influenced by ``domain factors'' such as the subject performing the gesture and the environment where this is taking place.\todo{Replace "this is taking place" with something else}
+
+These domain factors cause feature domain shifts between the training data and the data encountered during actual use or inference despite both domains containing the phenomenon of interest, for example the gesture we wish to classify.
+Due to these shifts, performance of the model is degraded. \todo{citation needed}
+
+There exist proposals to mitigate this degradation including using very large datasets.
+This is one method especially championed by large companies such as Tesla and OpenAI which have vast resources at their disposal.
+However, the gathering of such large datasets is only feasible for specific scenarios.
+In the case of Tesla, for example, having a large fleet of vehicles capable of recording what is essentially supervised training data makes it possible to collect the vast amounts of data required to build a dataset usable for the training of self-driving vehicles.\todo{specific citation needed}
+Various OpenAI projects, on the other hand, simply scrape large amounts of websites and collect these as part of their dataset.\todo{specific citation needed}
+Within the scope of our research, due to its nature, such widespread data collection methods are non-viable, and we must resort to more novel approaches towards data-agnosticism.
 
 \begin{itemize}
-	\item The potential for Wi-Fi to be a modality for ubiquitous sensing should not be underestimated.
-	\item Its prevalence in almost every modern building and home shows how widespread the technology already is.
-	\item Domain-agnostic models exist, but are not as good as specialiized models
-	\item The issue mostly boils down to the lack of generalizability of these existing models and the lack of ability to deal with domain-shift in any learning-based application
-	\item What solutions may exist to improve performance
+	\item It is thus interesting to be able to create a domain-agnostic model
+	\item Most research so far relies on a ground truth domain label to be provided
+	\begin{itemize}
+		\item We then use a ``discriminator'' network which predicts domain labels
+		\item Adversarial training procedure is then used in a min-max game \todo{citation needed}
+	\end{itemize}
+	\item Ma et al. with their CNN $\rightarrow$ state machine neural network $\rightarrow$ RNN, trained via RL.
+	\begin{itemize}
+		\item This doesn't require domain labels
+		\item Activity transitions are required though and state machine nn is actually kinda weak when not given enough temporal information + accurate action transition labels
+	\end{itemize}
+	\item We hypothesize that we can extend the RL component of Ma et al. to facilitate domain auto-labeling and eliminate the use of a state machine nn by using signal-to-image preprocessing methods.
+	\item To what extent can domain independent feature extraction be achieved through the use of this method, measured by performance metric values in a domain factor leave-out cross validation setting?
+	\item To what extent can a reinforcement learning agent utilize the latent signal representation produced by the CNN to accurately produce a latent representation of the domain space?
+	\item To what extent does changing the domain space latent representation from one-hot to a probability measure change the domain independent feature extraction achieved, through ...?
+	\item To what extent can the signal-to-image transformation replace the state machine nn presented in ma et al.?
 \end{itemize}
-
-We aim to improve the state-of-the-art results in domain-agnostic gesture classification.
-We first clean the raw CSI signals using techniques common in radar technology and from the literature, providing a cleaner signal for the model to work with.
-We then use table-to-image transformations to allow for our model to use images as its input, utilizing advances in learning-based image-processing algorithms.
-Finally, we utilize a reinforcement learning domain-recognition approach to provide our classification model with a latent representation of the domain, providing it with additional information to improve its prediction performance.
 
 

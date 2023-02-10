@@ -17,13 +17,13 @@
 \usepackage{verbatim}                   % Multiline comments (using \begin{comment}
 \usepackage{datetime}                   % For formatting dates
 \usepackage{array}                      % To add extra line spaces in tables
+\usepackage{todonotes}                  % Allows todo notes to be used.
 
 \RequirePackage[T1]{fontenc}
 \RequirePackage{graphicx,ifthen,color,pgf,multicol,calc}
 \RequirePackage{amsmath,amssymb,amsthm,caption,ifthen}
 \RequirePackage[charter]{mathdesign}
 \RequirePackage[sfdefault]{noto}
-\usepackage{biblatex}
 
 %\usepackage[colorlinks]{hyperref}
 \usepackage{color}
@@ -108,9 +108,12 @@ stringstyle=\color[rgb]{0.627,0.126,0.941},  %
 %\setlength{\parindent}{0.0in}
 %\setlength{\parskip}{0.1in}
 
+% Change the name of the todonotes \todo command so it doesn't interfere here
+\let \todonotestodo \todo
+
 % Introduce command \todo. This will print the argument in the margin
 \setlength{\marginparwidth}{2.3cm}
-\newcommand\todo[1]{
+\renewcommand\todo[1]{
   \-\marginpar[\raggedleft\footnotesize #1]
   {
     \raggedright\footnotesize #1
