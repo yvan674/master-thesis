@@ -1,3 +1,86 @@
 \chapter{Literature Review}\label{chapter:literature-review}
 
-This is the first real chapter, this depends on your thesis structure. 
+In this chapter we review important works in the literature which form the foundation of this thesis.
+We first discuss the initial set of works which cover Wi-Fi activity detection as well as other related works which do not use CSI data specificially before discussing those works which do utilize CSI data and publicly available datasets for this purpose.
+We then look at various signal-to-image transformation methods which may be applied to time-series signal data, enabling the use of techniques from the image processing domain.
+Finally, we look into domain shift mitigation methods and specifically reinforcement learning for domain shift mitigation.
+
+\section{Wi-Fi for Activity Detection}
+
+The first work regarding the use of Wi-Fi signals for the detection of humans subjects we could find is the work of Chetty, Smith, and Woodbridge in 2012 \cite{chetty2011through}.
+Their work utilized passive Wi-Fi signals propagating through a building with receivers placed outside the building for presence detection.
+This method achieved reasonable results and proved that Wi-Fi signals could be used to detect human presence in buildings, although it required the indoor and outdoor APs to be synchronized through wires and was unable to detect precise activities of the human subjects.
+
+The first work we could find discussing the use of Wi-Fi for activity detection is the work from Fadel Adib and Dina Katabi, published in 2013 \cite{adib2013see}.
+This work shows the potential of using signals which could be produced by Wi-Fi APs to detect human activity from through a wall.
+The most important idea in this work is the elimination of the radio ``flash'' which comes with the signal hitting a wall and bouncing back towards the transceiver.
+Their work focused more on the radar technology implications and not on the use of consumer Wi-Fi APs for gesture detection.
+They did, though, show that using matched filters was enough to perform rudimentary gesture recognition, given coarse enough gestures.
+
+In the same year, a different group published a paper showing how to use signals in the 2.4 GHz range, i.e., compatible with Wi-Fi transceivers, for simple gesture detection using Doppler shift identification \cite{pu2013whole}.
+This paper proposes the use of a narrowband pulse with a very narrow bandwidth of only a few Hertz and detecting the Doppler shift from the returned signal.
+Using this method, the researchers were able to identify 9 different gestures with a claimed 94\% accuracy.
+
+The same group as \cite{adib2013see} also published a separate paper in 2014 detailing the use of a custom-built Wi-Fi based device which could detect course body motions by leveraging the geometric position of its antennas and measuring values through a Time of Flight (ToF) approach \cite{adib20143d}.
+
+Finally, it is also important to note that IEEE has a task group 802.11bf assigned specifically to standardize Wi-Fi sensing technologies \cite{du2022overview}.
+This group is focused on standardizing the hardware requirements, specifically enabling CSI accessibility and specific measurement procedures which future devices can implement.
+Their target is to standardize these requirements for future devices both in the sub-7 GHz range and in the 60 GHz range.
+They additionally provide suggestions for what methods can be then be used to interpret the data provided, including the use of Fast Fourier Transform (FFT) algorithms to calculate a Channel Impulse Response from CSI and a Doppler FFT, which may be directly used for gesture recognition.
+The standards for 802.11bf is set to be ratified and published by September 2024.
+
+\section{Wi-Fi CSI for Gesture Recognition}
+
+To the best of our knowledge, the first work discussing the use of CSI for gesture recognition was published in 2015 by He et al. \cite{he2015wig}.
+This work looks into the use of CSI and outlier detection to detect gestures, achieving 92\% gesture recognition accuracy on four gestures in a line-of-sight experiment and 88\% accuracy in a non-line-of-sight experiment.
+
+The 2019 work titled Person-in-WiFi from Wang et al. proposes the use of an array of three transmitter and three receiver antennas to directly predict body segmentation and pose estimation of persons located in between the aforementioned antennas \cite{wang2019person}.
+In this work, they used an RGB camera to provide ground truth annotations.
+The ground truth body segmentation masks were generated using Mask-RCNN while the Body-25 model of OpenPose was used for pose detection.
+This work, shows that body segmentation and pose estimation is possible with only CSI data, achieving an mAP of 0.38 for body segmentation and around 0.1 meter error for join estimation. 
+Qualitatively, the results are quite impressive and it is clear that at the very least, the model performs well given that its input data is one-dimensional.
+
+Using the same dataset, Geng, Huang, and De La Torre published DensePose in 2022 performs similarly, but instead produces UV coordinates of the subjects.
+This work also provides some interesting preprocessing steps on the raw CSI data to improve prediction performance.
+
+WiGan, published in 2020, uses a Generative Adversarial Network (GAN) 
+
+2020 DeepMV proposes the use of multiple access points \cite{xue2020deepmv} and audio sources (ultrasound signals) with a domain discriminator/embedding generator
+
+2021 LSTM paper \cite{zhuravchak2022human}.
+
+2021 Ma et al. proposes the use of a neural network state machine after cnn encoder and a RL LSTM to eliminate the need of domain specific information \cite{ma2021location}.
+Also contains a table of a LOT of previous works in this field.
+
+2022 Zhang et al. proposes the use of federated learning to do gesture recognition and uses the widar 3.0 dataset \cite{zhang2022wifi}.
+
+2022 BSc Thesis by van den Biggelaar proposes the use of reinforcement learning with DQN as the classifier \cite{biggelaar2022gesture}.
+
+2022 BSc Thesis by Oerlemans compares how different preprocessing methods appear to affect gesture recognition performance \cite{oerlemans2022effect}.
+
+\section{Wi-Fi CSI datasets for Gesture Recognition}
+
+widar dataset \cite{zheng2019zero}.
+
+signfi dataset \cite{ma2018signfi}.
+
+Person-in-WiFi dataset \cite{wang2019person}.
+
+\section{Signal-to-Image Transformations}
+
+Different preprocessing methods have been investigated to transform raw tabular data into images for deep learning.
+Four state-of-the-art approaches are DeepInsight \cite{sharma2019deepinsight}, REFINED \cite{bazgir2020representation}, GAF, and MTF \cite{wang2015imaging}.
+A search of the current body of literature did not yield any research into a direct comparison of these techniques on a common dataset.
+Instead, a previous unpublished work by the author of this thesis for the Seminar course at the TU/e has shown that these four methods performed best among state-of-the-art signal-to-image transformations \cite{satyawan2023cnns}.
+
+\section{Domain Shift Mitigation Methods}
+
+GAN for domain independent gesture recognition where the discriminator predicts domain + gesture while generator generates data which is in domain \cite{zinys2021domain}.
+
+Attempts at latent space manifold alignment discussed in \cite{van2022insights} using minibatch alignment, but didn't work well.
+
+2022 BSc Thesis by Sips shows uses network pruning for domain shift mitigation \cite{sips2022impact}.
+
+\section{Reinforcement Learning for Domain Shift Mitigation}
+
+Adversarial RL for unsupervised domain shift mitigation, by doing RL based feature selection \cite{zhang2021adversarial}.

@@ -66,6 +66,12 @@ However, ML suffers from degraded performance when faced with domain-shifts.
 When dealing with new, unseen users and environments, gesture classification accuracy degrades significantly. \todo{citation needed}
 As such, factors to mitigate this domain-shift problem are required in any implementation outside of a pristine laboratory setting.
 
+For the purposes of our thesis, the Wi-Fi information we utilize for gesture classification is known as the Channel State Information (CSI).
+This comes in the form of two signals, an amplitude and phase shift, for each receiver access point (AP) from each transmitting AP.
+CSI itself is a description of the multipath effects of a signal traveling from the transmitting AP to the receiving AP.
+In the realm of WLAN, the estimated CSI of incoming signals is used to correct for these multipath effects, making it possible for the system to adapt to current environmental conditions.
+Importantly, human activity in an environment also affects the CSI, making it possible to infer activity through CSI.
+
 \section{Motivation}\label{sec:intro-motivation}
 
 There are significant potential commercial and practical benefits to enabling domain-agnostic Wi-Fi gesture classification.
@@ -95,6 +101,7 @@ These models are influenced by ``domain factors'' such as the subject performing
 
 These domain factors cause feature domain shifts between the training data and the data encountered during actual use or inference despite both domains containing the phenomenon of interest, for example the gesture we wish to classify.
 Due to these shifts, performance of the model is degraded. \todo{citation needed}
+It is thus interesting to be able to create a domain-agnostic model whose output is independent of the aforementioned domain factors.
 
 There exist proposals to mitigate this degradation including using very large datasets.
 This is one method especially championed by large companies such as Tesla and OpenAI which have vast resources at their disposal.
@@ -103,23 +110,21 @@ In the case of Tesla, for example, having a large fleet of vehicles capable of r
 Various OpenAI projects, on the other hand, simply scrape large amounts of websites and collect these as part of their dataset.\todo{specific citation needed}
 Within the scope of our research, due to its nature, such widespread data collection methods are non-viable, and we must resort to more novel approaches towards data-agnosticism.
 
-\begin{itemize}
-	\item It is thus interesting to be able to create a domain-agnostic model
-	\item Most research so far relies on a ground truth domain label to be provided
-	\begin{itemize}
-		\item We then use a ``discriminator'' network which predicts domain labels
-		\item Adversarial training procedure is then used in a min-max game \todo{citation needed}
-	\end{itemize}
-	\item Ma et al. with their CNN $\rightarrow$ state machine neural network $\rightarrow$ RNN, trained via RL.
-	\begin{itemize}
-		\item This doesn't require domain labels
-		\item Activity transitions are required though and state machine nn is actually kinda weak when not given enough temporal information + accurate action transition labels
-	\end{itemize}
-	\item We hypothesize that we can extend the RL component of Ma et al. to facilitate domain auto-labeling and eliminate the use of a state machine nn by using signal-to-image preprocessing methods.
-	\item To what extent can domain independent feature extraction be achieved through the use of this method, measured by performance metric values in a domain factor leave-out cross validation setting?
-	\item To what extent can a reinforcement learning agent utilize the latent signal representation produced by the CNN to accurately produce a latent representation of the domain space?
-	\item To what extent does changing the domain space latent representation from one-hot to a probability measure change the domain independent feature extraction achieved, through ...?
-	\item To what extent can the signal-to-image transformation replace the state machine nn presented in ma et al.?
-\end{itemize}
+Most alternative methods to simply using very large datasets rely on a ground truth domain label being provided \cite{jiang2018towards,xue2020deepmv}.
+In these approaches, a ``discriminator'' network is used to predict domain labels from the latent embedding of the data and an adversarial training procedure is then used.
+The ``generator'' which produces these latent embeddings must thus generate embeddings which contain no domain information while still maintaining enough information that a classifier model can use its output to correctly classify target features.
 
+In \cite{ma2021location}, a method is presented which does not require manually labeled domain labels to be provided.
+Instead, a CNN encoder and state machine neural network are used and their output is fed into a recurrent neural network (RNN) to provide a classification.
+The RNN is trained through reinforcement learning (RL) to predict features correctly and independently of domain factors.
 
+We hypothesize that we can extend the RL component of \cite{ma2021location} to facilitate domain auto-labeling and eliminate the use of a state machine neural network by using signal-to-image preprocessing methods.
+Towards these goals, we specify our research questions as follows:
+
+\begin{enumerate}
+	\item To what extent can a reinforcement learning agent utilize the latent signal representation produced by the CNN to accurately produce a latent representation of the domain space, measured by performance metric difference in a domain factor leave-out cross validation setting between a classifier provided the domain space representation and one which has not?
+	\item To what extent would changing the latent representation of the domain space from a one-hot encoding to a probability measure affect the performance of the classifier, measured by the performance metric difference in a domain factor leave-out cross validation between both domain space representation types?
+	\item To what extent can signal-to-image transformation replace the state machine neural network presented in \cite{ma2021location}, measured by comparing the performance metric difference in a domain factor leave-out cross validation setting between the model presented in \cite{ma2021location} and our approach provided no self-label?
+\end{enumerate}
+
+The rest of this thesis will present a literature review, background on required knowledge, the proposed methodology, experimental results, and discussions and conclusions of those results.
