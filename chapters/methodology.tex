@@ -1,6 +1,67 @@
 \chapter{Methodology}\label{chapter:methodology}
 
+The general intuition behind our approach is the lack of ability for a model to perform on unseen domains without any additional information.
+We first propose a signal preprocessing and signal-to-image transformation pipeline to provide clean\todo{is clean the right word here} data for our network to deal with. This image is then passed through a CNN encoder which produces a latent representation of the signal and uses multi-task learning to predict both the BVP of the signal and the gesture. This multi-task-learning stage is duplicated, once with a domain representation provided by the reinforcement learning agent and one provided with senseless values as its domain representation.
+
+\todonotestodo[inline]{This chapter is not finalized, due to the possibility of changing things around so will be kept as bullet points at this stage.}
+
+\section{Signal Preprocessing}\label{sec:methodology-signal-preprocessing}
+
 \begin{itemize}
-	\item The learning agent will, given the latent feature embedding produced by the CNN as its environment observation, produce a latent embedding of the domain space as a 1D vector as its action
-	\item an FCN is used as the classifier with two groups of two heads
+	\item Noise filtering with a low-pass filter, since high-freq noise is most likely not human movement
+	\item CSI Phase unwrapping and linear fitting as suggested by \cite{geng2022densepose}
+	\item CSI Phase derivative, to keep values from changing magnitude as in the case of unwrapping
+	\item DWT seems to have been attempted in some papers, so let's see if that helps.
+	\item We'll do an ablation study to see if these actually help
+\end{itemize}
+
+\section{Signal-to-Image Transformation}\label{sec:methodology-signal-to-image}
+
+Four crazy signal-to-image transformation methods! You won't believe number three!
+
+\begin{itemize}
+	\item DeepInsight
+	\item REFINED
+	\item GAF/FGAF (Feature-wise GAF) \cite{satyawan2023cnns}
+	\item MTF/FMTF (Feature-wise MTF) \cite{satyawan2023cnns}
+\end{itemize}
+
+\section{Signal encoding}\label{sec:methodology-signal-encoding}
+
+\begin{itemize}
+	\item The signal encoding backbone is a standard CNN
+	\item This will probably be something simple, like ResNet since the signal shouldn't be too complex that it requires something very SOTA
+	\item Alternatively, mobilenet may be used as well
+	\item This may actually be the least important aspect of this thesis
+\end{itemize}
+
+\section{Multi-task Learning}\label{sec:methodology-multi-task-learning}
+
+\begin{itemize}
+	\item The idea is to enforce some sort of representation that \textit{can} be used to get a domain-independent representation of the data
+	\item We utilize multi-task learning for this, where one head is used to predict BVP, which is theoretically domain-independent \cite{zheng2019zero}
+	\item The other head is a classifier head and classifies gestures
+	\item It's been shown that doing multi-task learning like this leads to good results with latent representations which are more robust \cite{tuggener2021deepscoresv2}
+	\item We duplicate this pair of heads to enable a reward function for the RL agent inspired by triplet loss
+\end{itemize}
+
+\section{Unsupervised Domain Representations through Reinforcement Learning}
+
+\begin{itemize}
+	\item Base terminology: Agent, action, state observation (state), and reward
+	\item The encoder-decoder architecture described in Section \ref{sec:methodology-signal-encoding} and \ref{sec:methodology-multi-task-learning} is the environment.
+	\item RL loop:
+	\begin{enumerate}
+		\item The agent receives the image embedding produced by the encoder/backbone as its state
+		\item The reinforcement learning agent produces an embedding of the domain as its action
+		\item The environment is trained with one pair of heads receiving the action of the agent while the other pair receives senseless values (either all 0s if the representation is one-hot or a uniform distribution if the representation is a probability measure)
+		\item After training of the agent, the RL agent is provided a reward from the environment which is used to improve the agent
+	\end{enumerate}
+	\item Let the loss function $\mathcal{L}_{w}, \mathcal{L}_{wo}$ represent the loss function of the heads with and without the action provided by the agent, respectively
+	\item Then, the reward function $\mathcal{R}$ of the agent is $\mathcal{R} = \mathcal{L}_{wo} - \mathcal{L}_{w}$
+	\begin{itemize}
+		\item The intuition is, the reward is based on how much better the head pair with the action should perform than the head pair without the action
+	\end{itemize}
+	\item To speed up training, we take a page from AutoML competitions and the environment is trained within 1 minute and be focused on improving performance as fast as possible instead of achieving the best performance, at least during hyperparam optimization
+	\item After hyperparameters are chosen, then we train properly and fully.
 \end{itemize}

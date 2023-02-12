@@ -7,6 +7,8 @@ Finally, we look into domain shift mitigation methods and specifically reinforce
 
 \section{Wi-Fi for Activity Detection}
 
+Past works have investigated the use of Wi-Fi signals generally for the purposes of activity detection.
+
 The first work regarding the use of Wi-Fi signals for the detection of humans subjects we could find is the work of Chetty, Smith, and Woodbridge in 2012 \cite{chetty2011through}.
 Their work utilized passive Wi-Fi signals propagating through a building with receivers placed outside the building for presence detection.
 This method achieved reasonable results and proved that Wi-Fi signals could be used to detect human presence in buildings, although it required the indoor and outdoor APs to be synchronized through wires and was unable to detect precise activities of the human subjects.
@@ -31,6 +33,8 @@ The standards for 802.11bf is set to be ratified and published by September 2024
 
 \section{Wi-Fi CSI for Gesture Recognition}
 
+A selection of works which utilize Wi-Fi CSI data specifically for the task of gesture recognition are discussed in this section.
+
 To the best of our knowledge, the first work discussing the use of CSI for gesture recognition was published in 2015 by He et al. \cite{he2015wig}.
 This work looks into the use of CSI and outlier detection to detect gestures, achieving 92\% gesture recognition accuracy on four gestures in a line-of-sight experiment and 88\% accuracy in a non-line-of-sight experiment.
 
@@ -43,28 +47,52 @@ Qualitatively, the results are quite impressive and it is clear that at the very
 Using the same dataset, Geng, Huang, and De La Torre published DensePose in 2022 performs similarly, but instead produces UV coordinates of the subjects.
 This work also provides some interesting preprocessing steps on the raw CSI data to improve prediction performance.
 
-WiGan, published in 2020, uses a Generative Adversarial Network (GAN) 
+WiGAN, published in 2020, proposes the use of a Generative Adversarial Network (GAN) to augment training data using the generator as well as using the discriminator as a feature fusion and extraction module \cite{jiang2020wigan}.
+The output of the discriminator is then used fed into a Support Vector Machine (SVM) which classifies then gesture seen in the input data.
+The authors claim that by using the discriminator, which fuses together multiple layers of a CNN module through yet another convolution, their method is able to ``learn and recognize the importance of different depth features by itself''.
+On publicly available datasets, WiGAN indeed achieves better results than the competing methods at the time, achieving 98\% accuracy on Widar 3.0 with known subjects and $\approx$8--10\% lower performance on new domains.
 
-2020 DeepMV proposes the use of multiple access points \cite{xue2020deepmv} and audio sources (ultrasound signals) with a domain discriminator/embedding generator
+The same group, in the same year, published DeepMV which proposes the use of multiple APs and audio sources, in the form of ultrasound signals, with a domain discriminator and embedding generator \cite{xue2020deepmv}.
+This work is based on the intuition that the fusion of sensor data from multiple APs and audio sources placed around the room, which intuitively should provide more data.
+The embedding generator produces a latent representation of the action which can then be used by a fully connected module to classify the action being performed while the domain discriminator uses the latent representation to predict the domain of the action.
+A minimax game is played between the embedding generator and domain discriminator to minimize the maximum accuracy of the domain discriminator while maximizing the minimum accuracy of the action classifier.
+On their self-collected dataset, they were able to achieve 83.7\% mean accuracy, outperforming all other benchmarked methods.
 
-2021 LSTM paper \cite{zhuravchak2022human}.
+The 2021 paper by Zhuravchak et al. proposes the use of an LSTM as a classifier. 
+In this method approach, CSI data is provided as an input with a fixed length and the LSTM provides a single output representing the action detected within the input window.
+Their method achieves 87.8\% accuracy on a self-collected dataset.
 
-2021 Ma et al. proposes the use of a neural network state machine after cnn encoder and a RL LSTM to eliminate the need of domain specific information \cite{ma2021location}.
-Also contains a table of a LOT of previous works in this field.
+Ma et al., published in 2021, proposes the use of a CNN and neural network state machine encoder and a LSTM trained using RL to eliminate the need of domain specific information \cite{ma2021location}.
+This work also contains a curated benchmark of many previous works in this field.
+Their proposal is the use of a neural network state machine relies on the assumption that there is a temporal dependency within and across CSI segments.
+For example, it is unlikely that a person who is currently standing will immediately be sitting within the next CSI segment without a sit-down transition segment in between.
+Although unlikely, the probability is non-zero, due to incontinuities in the data and mislabeling in the ground-truth labels, and thus a neural network state machine is used.
+The results show >97\% mean accuracy on in-domain test samples with a drop of 14--17\% on out-of-domain samples.
 
-2022 Zhang et al. proposes the use of federated learning to do gesture recognition and uses the widar 3.0 dataset \cite{zhang2022wifi}.
+Additionally, a few bachelors thesis' fromt he past years at the IRIS research cluster at TU/e have focused on this problem as well.
+The 2022 thesis by van den Biggelaar proposes the use of reinforcement learning with Deep Q-Networks as the gesture classifier \cite{biggelaar2022gesture}.
+Their result shows $\sim$88\% mean accuracy on Widar 3.0, dropping by $\sim$4\% on out-of-domain test samples.
 
-2022 BSc Thesis by van den Biggelaar proposes the use of reinforcement learning with DQN as the classifier \cite{biggelaar2022gesture}.
-
-2022 BSc Thesis by Oerlemans compares how different preprocessing methods appear to affect gesture recognition performance \cite{oerlemans2022effect}.
+The 2022 thesis by Oerlemans compares how different preprocessing methods appear to affect gesture recognition performance \cite{oerlemans2022effect}.
+Specifically, signal filtering through a finite impulse response filter and phase unwrapping, transformation to a Doppler frequency spectrum (DFS), and transformation using Gramian Angular Fields (GAF) was explored.
+On the SignFi dataset, they show that each of the above steps do indeed significantly improve model performance with the GAF transformation coupled with signal filtering resulting in the best performance.
 
 \section{Wi-Fi CSI datasets for Gesture Recognition}
 
-widar dataset \cite{zheng2019zero}.
+Three Wi-Fi CSI datasets for gesture recognition were considered for this thesis and they are each explained in this section.
 
-signfi dataset \cite{ma2018signfi}.
+The Widar 3.0 dataset, forthwith referred to as the Widar dataset for brevity, presents a dataset with developed specifically for ``cross-domain learning solutions'' \cite{zheng2019zero}.
+The solution provided in this dataset is two-fold: 1) the (relatively) high number of domains that the data was collected with, and 2) the proposal of Body-coordinate Velocity Profile (BVP) with is a theoretically domain-independent representation of the data.
+More details of BVP is discussed in Section \todo{Desecribe in background section}.
+Finally, this paper also provides a baseline model to compare against.
 
-Person-in-WiFi dataset \cite{wang2019person}.
+SignFi is a dataset of Wi-Fi CSI data specifically for sign language recognition \cite{ma2018signfi}.
+This dataset contains over 276 sign gestures in a lab and home environment with five different users.
+A baseline CNN model is also presented in this paper, capable of achieving a $\sim$87\% mean accuracy over 150 sign gestures.
+
+Person-in-WiFi is the dataset used in the paper by Wang et al. \cite{wang2019person}.
+This dataset was made public and includes both Wi-Fi CSI data and RGB camera data of the activity from a fixed position.
+This dataset was collected specifically for pose estimation solutions and is not meant specifically for activity recognition, as no activity labels are provided in the dataset.
 
 \section{Signal-to-Image Transformations}
 
@@ -72,15 +100,35 @@ Different preprocessing methods have been investigated to transform raw tabular 
 Four state-of-the-art approaches are DeepInsight \cite{sharma2019deepinsight}, REFINED \cite{bazgir2020representation}, GAF, and MTF \cite{wang2015imaging}.
 A search of the current body of literature did not yield any research into a direct comparison of these techniques on a common dataset.
 Instead, a previous unpublished work by the author of this thesis for the Seminar course at the TU/e has shown that these four methods performed best among state-of-the-art signal-to-image transformations \cite{satyawan2023cnns}.
+A more thorough description of each of these methods are described in Section \todo{Describe in background section}
 
 \section{Domain Shift Mitigation Methods}
 
-GAN for domain independent gesture recognition where the discriminator predicts domain + gesture while generator generates data which is in domain \cite{zinys2021domain}.
+There are a number of papers focusing on domain shift mitigation methods.
+A selection of these papers, specifically those which are highly related to our problem domain, are discussed in this section.
 
-Attempts at latent space manifold alignment discussed in \cite{van2022insights} using minibatch alignment, but didn't work well.
+The 2021 paper by Zinys et al. focuses on the use of GANs for domain shift mitigation, called Adversarial Domain Adaptation (ADA) \cite{zinys2021domain}.
+In this work, the discriminator attempts to predict gesture and domain while the generator produces sample data.
+The discriminator is provided a loss function based on ground truth data and accurately identifying generated data while the generator produces sample data which is in the same domain and gesture as its provided input.
+Their results, tested on Widar show significantly better performance than the baseline Widar model on unseen domains.
 
-2022 BSc Thesis by Sips shows uses network pruning for domain shift mitigation \cite{sips2022impact}.
+Zhang et al., in 2022, proposes the use of federated learning for domain shift mitigation \cite{zhang2022wifi}.
+The concept is to allow for each user to train their own neural networks and using matched average federated learning to combine all user models together.
+Tested on the Widar dataset, they show performance competitive with state-of-the-art techniques.
+
+Van Berlo et al. discusses attempts at using mini-batch alignment to generate domain factor independent latent representations of the data.
+They showed that unfortunately, the proposed mini-batch alignment pipeline did not lead to better performance across domains.
+The authors believe this may be due to a lack of sufficient domain factor information, leading to poor mini-batch alignment.
+Alternatively, the assumptions of the underlying probability distributions may be incorrect.
+In any case, it seems that this method, given current publicly available datasets, does not improve the SOTA.
+
+Finally, the 2022 bachelors thesis by Sips investigates the use of network pruning and quantization for domain shift mitigation \cite{sips2022impact}.
+The basic concept is to improve model robustness by enforcing sparsity and utilizing mixed precision training.
+Tested against a baseline where sparsity and mixed precision training was not used, the modified networks performed slightly worse on in-domain test samples while they had mixed results on out-of-domain samples.
 
 \section{Reinforcement Learning for Domain Shift Mitigation}
 
-Adversarial RL for unsupervised domain shift mitigation, by doing RL based feature selection \cite{zhang2021adversarial}.
+Zhang et al. in 2021 published research into using RL based features election for domain shift mitigation \cite{zhang2021adversarial}.
+The proposed method would be able to select the most relevant features across two domains by employing Q-learning to learn policies for feature selection, utilizing the performance of a domain discriminator as its reward function.
+By doing so, they attempt to align the feature manifolds between both domains.
+Benchmarked on publicly available datasets, this method achieves the best mean accuracy among SOTA methods.
