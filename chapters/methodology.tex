@@ -11,7 +11,7 @@ The general intuition behind our approach is the lack of ability for a model to 
 The general architecture of our approach can be seen in Figure \ref{fig:arch-diagram}.
 We first propose a signal preprocessing and signal-to-image transformation pipeline, described in Section \ref{sec:methodology-signal-preprocessing} and \ref{sec:methodology-signal-to-image}.
 This transforms the input signal into an image that is then passed through a CNN encoder, as described in Section {sec:methodology-signal-encoding}, encoding the signal into a latent representation.
-This latent representation is then used in two different ways: As an input for the multi-task learning heads, described in Section \ref{sec:methodology-multi-task-learning}, and as the state observation for our RL agent.
+This latent representation is then used in two different ways: As an input for the multi-task learning heads, described in Section \ref{sec:methodology-multi-task-learning}, and as the state observation for our RL agent, described in Section \ref{sec:methodology-rl}.
 
 Two mitigate domain-shift, our RL agent is tasked with producing the best possible embedding of the domain $D_{r}$ as its action given the signal latent representation as its state observation.
 
@@ -33,11 +33,13 @@ As such, we propose the following steps from traditional signal processing to cl
 	\item We'll do an ablation study to see if these actually help
 \end{itemize}
 
+The signal can now be considered clean, or at least clean enough that we can continue with further steps.
+
 \section{Signal-to-Image Transformation}\label{sec:methodology-signal-to-image}
 
 Four crazy signal-to-image transformation methods! You won't believe number three!\todo{If there are no objections, this will be in the final paper}
 
-As we wish to leverage advances from computer vision in our algorithm, we must first transform the signal into an image.
+The next stage in our method is transform the signal into an image, leveraging advances from computer vision.
 There are many works from the literature which show that there are certainly improvements that can be gained from performing image processing on temporal data.
 We will experiment with the following four methods for signal-to-image transformation: DeepInsight \cite{sharma2019deepinsight}, REFINED \cite{bazgir2020representation}, GAF/FGAF (Feature-wise GAF) \cite{wang2015imaging,satyawan2023cnns}, and MTF \cite{wang2015imaging}.
 
@@ -106,9 +108,11 @@ The values in $M_{t}$ are the size of each bin for a given sample.
 $M_{t}$ is then normalized and aligned along the temporal axis such that in this new matrix $M$, $M_{i, j}$ represents the probability of a transition from bin $i$ to bin $j$.
 $M$ is then an image of size $q \times q$.
 
+Regardless of the chosen method, the signal has now been transformed into an image and we can proceed with the encoding of this image into a latent space.
+
 \section{Signal encoding}\label{sec:methodology-signal-encoding}
 
-Once the signal has been transformed into an image, we then calculate a latent representation using a CNN.
+The encoding of the signal, now an image, into a latent space is performed using CNN-based image processing methods.
 
 \begin{itemize}
 	\item The signal encoding backbone is a standard CNN
@@ -117,7 +121,10 @@ Once the signal has been transformed into an image, we then calculate a latent r
 	\item This may actually be the least important aspect of this thesis
 \end{itemize}
 
-\section{Unsupervised Domain Representations through Reinforcement Learning}
+The latent representation of this signal is then passed to both the reinforcement learning agent as its state observation as well as to the multi-task learning modules.
+How the RL agent uses this state observation is described in Section \ref{sec:methodology-rl} while its use by the multi-task learning module is described in Section \ref{sec:methodology-multi-task-learning}.
+
+\section{Unsupervised Domain Representations through Reinforcement Learning}\label{sec:methodology-rl}
 
 To mitigate domain shift, we implement a novel method for unsupervised domain representations through reinforcement learning.
 
@@ -149,7 +156,13 @@ The actual gesture classification module is built using a multi-task learning mo
 \begin{itemize}
 	\item The idea is to enforce some sort of representation that \textit{can} be used to get a domain-independent representation of the data
 	\item We utilize multi-task learning for this, where one head is used to predict BVP, which is theoretically domain-independent \cite{zheng2019zero}
+	\begin{itemize}
+		\item We are not actually interested in the BVP, but having it as part of our training will enforce the need for a representation which is theoretically domain-independent.
+		\item \cite{martini2021domain} suggests the use of MMD and an adversarial approach to training the model to ensure that while the representation is domain-invariant, it still retains enough discriminatory powers such that the domain classifier can still perform.
+		\item Instead of this approach, we use the BVP prediction to enforce a representation which is domain-invariant and we use an RL agent instead of the domain classifier suggested in \cite{martini2021domain}.
+	\end{itemize}
 	\item The other head is a classifier head and classifies gestures
 	\item It's been shown that doing multi-task learning like this leads to good results with latent representations which are more robust \cite{tuggener2021deepscoresv2}
 	\item We duplicate this pair of heads to enable a reward function for the RL agent inspired by triplet loss
+	\item Loss function for the gesture classifier is cross entropy loss and for the BVP generator, it is binary-cross entropy loss.
 \end{itemize}
