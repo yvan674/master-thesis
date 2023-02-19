@@ -138,10 +138,11 @@ To mitigate domain shift, we implement a novel method for unsupervised domain re
 		\item The environment is trained with one pair of heads receiving the action of the agent while the other pair receives senseless values (either all 0s if the representation is one-hot or a uniform distribution if the representation is a probability measure)
 		\item After training of the agent, the RL agent is provided a reward from the environment which is used to improve the agent
 	\end{enumerate}
-	\item Let the loss function $\mathcal{L}_{w}, \mathcal{L}_{wo}$ represent the loss function of the heads with and without the action provided by the agent, respectively
-	\item Then, the reward function $\mathcal{R}$ of the agent is $\mathcal{R} = \mathcal{L}_{wo} - \mathcal{L}_{w}$
+	\item Let a performance metric function $M$ denote the gesture classification performance of a multi-task learning module given the gesture classification prediction $\hat{y_{c}}$. Then, the reward function $R$ of the agent is $R\left(M\left(\hat{y}_{c,rl}, y_c\right),M\left(\hat{y}_{c,0}, y_c\right)\right)$ and calculates the gesture prediction performance difference between the module given the domain embedding and the module given the null embedding.
 	\begin{itemize}
 		\item The intuition is, the reward is based on how much better the head pair with the action should perform than the head pair without the action
+		\item This is based on the idea behind triplet loss, where in an unsupervised scenario, model performance can be determined by the metric performance differential between two inputs. Maximizing this difference implies better total model performance.
+		\item We will also experiment with L1 vs L2 regularization on the reward, representated by the function $R$.
 	\end{itemize}
 	\item To speed up training, we take a page from AutoML competitions and the environment is trained within 1 minute and be focused on improving performance as fast as possible instead of achieving the best performance, at least during hyperparam optimization
 	\item After hyperparameters are chosen, then we train properly and fully.
