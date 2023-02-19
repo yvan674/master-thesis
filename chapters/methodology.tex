@@ -25,7 +25,6 @@ One of these modules is provided $D_{0}$, representing a vector of zeros, and th
 As the old adage goes, garbage in, garbage out.
 As such, we propose the following steps from traditional signal processing to clean up the input signal for our ML algorithm.
 
-
 \begin{itemize}
 	\item Noise filtering with a low-pass filter, since high-freq noise is most likely not human movement
 	\item CSI Phase unwrapping and linear fitting as suggested by \cite{geng2022densepose}
@@ -36,7 +35,7 @@ As such, we propose the following steps from traditional signal processing to cl
 
 \section{Signal-to-Image Transformation}\label{sec:methodology-signal-to-image}
 
-Four crazy signal-to-image transformation methods! You won't believe number three!\todo{If there are no objections, this will be the title in the final paper}
+Four crazy signal-to-image transformation methods! You won't believe number three!\todo{If there are no objections, this will be in the final paper}
 
 As we wish to leverage advances from computer vision in our algorithm, we must first transform the signal into an image.
 There are many works from the literature which show that there are certainly improvements that can be gained from performing image processing on temporal data.
