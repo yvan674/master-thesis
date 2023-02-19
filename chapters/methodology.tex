@@ -1,10 +1,17 @@
 \chapter{Methodology}\label{chapter:methodology}
 
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{figures/arch_diagram.pdf}
+	\caption{An abstracted diagram of the proposed architecture in this thesis. Red-brown components are for signal processing and signal-to-image transformation. Green components are for the signal encoding, yellow components are the multi-task-learning modules, orange components are for RL, and blue components are either input or outputs of the model.}
+	\label{fig:arch-diagram}
+\end{figure}
+
 The general intuition behind our approach is the lack of ability for a model to perform on unseen domains without any additional information.
-The general architecture of our approach can be seen in Figure \todo{Figure number}.
+The general architecture of our approach can be seen in Figure \ref{fig:arch-diagram}.
 We first propose a signal preprocessing and signal-to-image transformation pipeline, described in Section \ref{sec:methodology-signal-preprocessing} and \ref{sec:methodology-signal-to-image}.
 This transforms the input signal into an image that is then passed through a CNN encoder, as described in Section {sec:methodology-signal-encoding}, encoding the signal into a latent representation.
-This latent representation is then used in two different ways: As an input for the multi-task learning heads, described in Section \ref{methodology-multi-task-learning}, and as the state observation for our RL agent.
+This latent representation is then used in two different ways: As an input for the multi-task learning heads, described in Section \ref{sec:methodology-multi-task-learning}, and as the state observation for our RL agent.
 
 Two mitigate domain-shift, our RL agent is tasked with producing the best possible embedding of the domain $D_{r}$ as its action given the signal latent representation as its state observation.
 
@@ -17,6 +24,7 @@ One of these modules is provided $D_{0}$, representing a vector of zeros, and th
 
 As the old adage goes, garbage in, garbage out.
 As such, we propose the following steps from traditional signal processing to clean up the input signal for our ML algorithm.
+
 
 \begin{itemize}
 	\item Noise filtering with a low-pass filter, since high-freq noise is most likely not human movement
@@ -34,7 +42,7 @@ As we wish to leverage advances from computer vision in our algorithm, we must f
 There are many works from the literature which show that there are certainly improvements that can be gained from performing image processing on temporal data.
 We will experiment with the following four methods for signal-to-image transformation: DeepInsight \cite{sharma2019deepinsight}, REFINED \cite{bazgir2020representation}, GAF/FGAF (Feature-wise GAF) \cite{wang2015imaging,satyawan2023cnns}, and MTF \cite{wang2015imaging}.
 
-\subsubsection{DeepInsight}
+\subsection{DeepInsight}
 
 DeepInsight \cite{sharma2019deepinsight} applies t-SNE on the columns of $V$, resulting in each AP $k$ being mapped to a point in 2D space.
 The entire space is then rotated to fit within the minimum rectangular bounding box.
@@ -42,7 +50,7 @@ These rotated points then become the pixel coordinates for a given AP.
 The value of the RSSI of a given AP $k$ is then directly mapped to the value of its corresponding pixel.
 If multiple features share a pixel location, the average value of these features is then used as the value of the pixel.
 
-\subsubsection{REFINED}
+\subsection{REFINED}
 
 REpresentation of Features as Images with NEighborhood Dependencies \cite{bazgir2020representation} uses a technique the authors call ``Bayesian Multidimensional Scaling''.
 A 2D embedding of the data $V_{embed}$ is calculated using Multidimensional Scaling (MDS) with a Euclidean distance metric.
@@ -50,7 +58,7 @@ A pixel grid $P$ of $p^2$ pixels, where $p=\left\lceil \sqrt{K} \right\rceil$ is
 A mapping of features to pixels is calculated by considering all permutations which minimize the Euclidean distance of the pixel mapping to the feature location in $V_{embed}$ while keeping at most one feature per pixel iteratively.
 This final mapping is calculated using a hill-climb algorithm.
 
-\subsubsection{GAF}
+\subsection{GAF}
 
 Gramian Angular Fields \cite{wang2015imaging} first transform the incoming signal for each AP to polar coordinates with
 \begin{equation}
@@ -92,7 +100,7 @@ We call this transformation Feature-wise GAF (FGAF).
 
 In either case, $G$ is finally normalized.
 
-\subsubsection{MTF}
+\subsection{MTF}
 Markovian Transition Fields \cite{wang2015imaging} first quantizes the signal into $q$ bins, each bin representing an interval of RSSI strength.
 A Markovian transition matrix $M_{t}$ is then constructed where each row represents a fingerprint and each column a bin. 
 The values in $M_{t}$ are the size of each bin for a given sample.
