@@ -147,6 +147,10 @@ To mitigate domain shift, we implement a novel method for unsupervised domain re
 	\item After hyperparameters are chosen, then we train properly and fully.
 	\item A reward is then calculated using the function $R\left(M\left(\hat{y}_{rl}, y\right)-M\left(\hat{y}_{0}, y\right)\right)$, where $M$ is the metric used to calculate the performance of the gesture classifier in each multi-task learning module and $R$ is some reward function.
 	\item We do not use the absolute difference, as we are interested in the having negative values representing the module provided $D_0$ having better performance.
+	\item We will be looking at PPO \cite{schulman2017proximal} and SARSA \cite{rummery1994line}
+	\begin{itemize}
+		\item We've used both these techniques before in a previous project, so implementation should be relatively straightforwards
+	\end{itemize}
 \end{itemize}
 
 \section{Multi-task Learning}\label{sec:methodology-multi-task-learning}
