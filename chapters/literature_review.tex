@@ -126,9 +126,19 @@ Finally, the 2022 bachelors thesis by Sips investigates the use of network pruni
 The basic concept is to improve model robustness by enforcing sparsity and utilizing mixed precision training.
 Tested against a baseline where sparsity and mixed precision training was not used, the modified networks performed slightly worse on in-domain test samples while they had mixed results on out-of-domain samples.
 
-\section{Reinforcement Learning for Domain Shift Mitigation}
+\section{Domain Shift Mitigation}
+
+The following section contains some selected works in domain shift mitigation, mainly those related directly with RL of self-supervised techniques.
 
 Zhang et al. in 2021 published research into using RL based features election for domain shift mitigation \cite{zhang2021adversarial}.
 The proposed method would be able to select the most relevant features across two domains by employing Q-learning to learn policies for feature selection, utilizing the performance of a domain discriminator as its reward function.
 By doing so, they attempt to align the feature manifolds between both domains.
 Benchmarked on publicly available datasets, this method achieves the best mean accuracy among SOTA methods.
+
+Martini et al. published a technique called ``Domain-Adversarial Neural Networks'' in 2021 \cite{martini2021domain}.
+This technique uses a feature extractor, a domain classifier, and a label predictor.
+The feature extractor maps the input to a latent representation, the domain classifier predicts the domain given the latent representation, and the label predictor provides a class prediction given the extracted features.
+The loss function of the model balances the label predictor loss, using Cross Entropy Loss, and the domain classifier loss, also using Cross Entropy Loss, with the goal of providing a latent representation from the feature extractor which is domain-invariant, yet still discriminative such that the domain classifier is still capable of accurately classifying the domain.
+Additionally, the paper proposes the use of Maximum Mean Discrepancy (MMD) to measure the difference between two domains.
+The MMD measures the kernel-based difference between feature means of each domain.
+This work proposes the use of MMD with the goal of minimizing this distance while maintaining the distinctness of each domain, allowing for the domain classifier to still work.
