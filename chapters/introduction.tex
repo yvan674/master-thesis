@@ -1,9 +1,9 @@
 \chapter{Introduction}\label{chapter:introduction}
 
-\begin{figure}
+\begin{figure}[b]
 	\centering
-	\missingfigure{"Picture of a Phillips Hue Lightbulb"}
-	\caption{A Phillips Hue Lightbulb, one example of an IoT smart lightbulb with an integrated Wi-Fi Radio}
+	\includegraphics[width=0.3\linewidth]{figures/phillips_hue}
+	\caption{A Phillips Hue Lightbulb, one example of an IoT smart lightbulb with an integrated Wi-Fi Radio \cite{ryles2022now}.}
 	\label{fig:phillips-hue-lightbulb}
 \end{figure}
 
@@ -63,7 +63,7 @@ It naturally, or not so naturally, follows then, can Wi-Fi be used for remote se
 The answer to this question, according to \cite{adib2013see} and \cite{chetty2011through}, the answer is a resounding yes!
 
 However, ML suffers from degraded performance when faced with domain-shifts.
-When dealing with new, unseen users and environments, gesture classification accuracy degrades significantly. \todo{citation needed}
+When dealing with new, unseen users and environments, gesture classification accuracy degrades significantly \cite{chetty2011through,adib2013see,pu2013whole,adib20143d,he2015wig,jiang2018towards,zheng2019zero,jiang2020wigan,ma2021location}.
 As such, factors to mitigate this domain-shift problem are required in any implementation outside of a pristine laboratory setting.
 
 For the purposes of our thesis, the Wi-Fi information we utilize for gesture classification is known as the Channel State Information (CSI).
@@ -76,8 +76,7 @@ Importantly, human activity in an environment also affects the CSI, making it po
 
 There are significant potential commercial and practical benefits to enabling domain-agnostic Wi-Fi gesture classification.
 
-From a commercial perspective, the 802.11bf standard, which standardizes the hardware technology required for Wi-Fi sensing, is on the cusp of being released.
-If we are to take advantage of these new technologies, it is imperative that its practical applications be researched. \todo{I don't like the wording here}
+The upcoming release of the 802.11bf standard, which standardizes the requisite hardware technology for Wi-Fi sensing, marks a pivotal moment from a commercial standpoint. To fully exploit these emerging technologies, it is of utmost importance to investigate their practical applications.
 
 Wi-Fi sensing is also unique in that the hardware for it is already commercially available and widespread, though not necessarily standardized.
 As such, it is in a unique place where it is an almost completely software-based solution for preexisting, mass-adopted hardware enabling completely new modes of interaction.
@@ -88,26 +87,26 @@ A model that cannot adapt to such issues will inevitably be nonviable for commer
 
 We also wish to further the state-of-the-art in domain-agnostic models.
 The results of this thesis is not only applicable to the field of Wi-Fi gesture classification.
-Domain-agnostic systems are required for many industry applications, such as [what]. \todo{Figure out what}
+Domain-agnostic systems are required for many industry applications, such as for patient sensing in healthcare, for consumer behavior tracking in retail, and for hands-free control of smart IoT devices in consumer homes.
 The conclusions of this thesis will hopefully be able to advance the field and provide new insight into what future avenues of research may end up being fruitful.
 
 Finally, a Sci-Fi future where all your devices are controlled through your thoughts might seem like a dream, but in reality, we are not too far from this future.
-The use of Wi-Fi sensing to detect gestures is one step closer to this futuristic dream and in addition to all the potential commercial and practical benefits this technology could bring, the sheer ``coolness'' of the technology should not be underestimated as a motivation to perform research. \todo{A bit less academic, but hopefully just as viable as a motivation}
+The use of Wi-Fi sensing to detect gestures is one step closer to this futuristic dream and in addition to all the potential commercial and practical benefits this technology could bring, the sheer ``coolness'' of the technology should not be underestimated as a motivation to perform research.
 
 \section{Problem Statement}\label{sec:intro-problem-statement}
 Models already exist to classify gestures through Wi-Fi CSI data.
 Ideally models are solely influenced by those factors which contribute to the correct classification of the gesture, this is, in reality, not the case.
-These models are influenced by ``domain factors'' such as the subject performing the gesture and the environment where this is taking place.\todo{Replace "this is taking place" with something else}
+These models are susceptible to the influence of ``domain factors'', encompassing variables such as the identity of the gesturing subject and the surrounding environment in which the gesture is performed.
 
 These domain factors cause feature domain shifts between the training data and the data encountered during actual use or inference despite both domains containing the phenomenon of interest, for example the gesture we wish to classify.
-Due to these shifts, performance of the model is degraded. \todo{citation needed}
+Due to these shifts, performance of the model is degraded \cite{chetty2011through,adib2013see,pu2013whole,adib20143d,he2015wig,jiang2018towards,zheng2019zero,jiang2020wigan,ma2021location}.
 It is thus interesting to be able to create a domain-agnostic model whose output is independent of the aforementioned domain factors.
 
 There exist proposals to mitigate this degradation including using very large datasets.
 This is one method especially championed by large companies such as Tesla and OpenAI which have vast resources at their disposal.
 However, the gathering of such large datasets is only feasible for specific scenarios.
-In the case of Tesla, for example, having a large fleet of vehicles capable of recording what is essentially supervised training data makes it possible to collect the vast amounts of data required to build a dataset usable for the training of self-driving vehicles.\todo{specific citation needed}
-Various OpenAI projects, on the other hand, simply scrape large amounts of websites and collect these as part of their dataset.\todo{specific citation needed}
+In the case of Tesla, for example, having a large fleet of vehicles capable of recording what is essentially supervised training data makes it possible to collect the vast amounts of data required to build a dataset usable for the training of self-driving vehicles \cite{tesla2017data}.
+Various OpenAI projects, on the other hand, simply scrape large amounts of websites and collect these as part of their dataset \cite{brown2020language}.
 Within the scope of our research, due to its nature, such widespread data collection methods are non-viable, and we must resort to more novel approaches towards data-agnosticism.
 
 Most alternative methods to simply using very large datasets rely on a ground truth domain label being provided \cite{jiang2018towards,xue2020deepmv}.

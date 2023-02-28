@@ -58,7 +58,7 @@ The embedding generator produces a latent representation of the action which can
 A minimax game is played between the embedding generator and domain discriminator to minimize the maximum accuracy of the domain discriminator while maximizing the minimum accuracy of the action classifier.
 On their self-collected dataset, they were able to achieve 83.7\% mean accuracy, outperforming all other benchmarked methods.
 
-The 2021 paper by Zhuravchak et al. proposes the use of an LSTM as a classifier. 
+The 2021 paper by Zhuravchak et al. proposes the use of an LSTM as a classifier \cite{zhuravchak2022human}. 
 In this method approach, CSI data is provided as an input with a fixed length and the LSTM provides a single output representing the action detected within the input window.
 Their method achieves 87.8\% accuracy on a self-collected dataset.
 

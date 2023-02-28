@@ -3,7 +3,7 @@
 \begin{figure}
 	\centering
 	\includegraphics[width=\linewidth]{figures/arch_diagram.pdf}
-	\caption{An abstracted diagram of the proposed architecture in this thesis. Red-brown components are for signal processing and signal-to-image transformation. Green components are for the signal encoding, yellow components are the multi-task-learning modules, orange components are for RL, and blue components are either input or outputs of the model.}
+	\caption{An abstracted diagram of the proposed architecture in this thesis.}
 	\label{fig:arch-diagram}
 \end{figure}
 
@@ -18,12 +18,24 @@ Two mitigate domain-shift, our RL agent is tasked with producing the best possib
 To provide the RL agent with a reward function, inspired by triplet loss, we use two different multi-task learning modules.
 One of these modules is provided $D_{0}$, representing a vector of zeros, and the other $D_{r}$.
 
-\todonotestodo[inline]{This chapter is not finalized, due to the possibility of changing things around so will be kept as bullet points at this stage.}
+%\todonotestodo[inline]{This chapter is not finalized, due to the possibility of changing things around so will be kept as bullet points at this stage.}
 
-\section{Signal Processing}\label{sec:methodology-signal-preprocessing}
+\section{Signal Preprocessing}\label{sec:methodology-signal-preprocessing}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.8\linewidth]{figures/signal_preprocessing_diagram.pdf}
+	\caption{Details of the signal preprocessing module. The module is comprised of traditional signal preprocessing and a signal-to-image transformation.}
+	\label{fig:signal-preprocessing-diagram}
+\end{figure}
 
 As the old adage goes, garbage in, garbage out.
-As such, we propose the following steps from traditional signal processing to clean up the input signal for our ML algorithm.
+As such, we propose a signal preprocessing module, visualized in Figure \ref{fig:signal-preprocessing-diagram}.
+This module first cleans the signal using traditional signal preprocessing and then transforms it into an image for use by the signal encoder.
+
+\subsection{Signal Processing}
+
+We propose the following steps from traditional signal processing to clean up the input signal for our ML algorithm.
 
 \begin{itemize}
 	\item Noise filtering with a low-pass filter, since high-freq noise is most likely not human movement
@@ -35,15 +47,15 @@ As such, we propose the following steps from traditional signal processing to cl
 
 The signal can now be considered clean, or at least clean enough that we can continue with further steps.
 
-\section{Signal-to-Image Transformation}\label{sec:methodology-signal-to-image}
+\subsection{Signal-to-Image Transformation}\label{sec:methodology-signal-to-image}
 
-Four crazy signal-to-image transformation methods! You won't believe number three!\todo{If there are no objections, this will be in the final paper}
+%Four crazy signal-to-image transformation methods! You won't believe number three!\todo{If there are no objections, this will be in the final paper}
 
 The next stage in our method is transform the signal into an image, leveraging advances from computer vision.
 There are many works from the literature which show that there are certainly improvements that can be gained from performing image processing on temporal data.
 We will experiment with the following four methods for signal-to-image transformation: DeepInsight \cite{sharma2019deepinsight}, REFINED \cite{bazgir2020representation}, GAF/FGAF (Feature-wise GAF) \cite{wang2015imaging,satyawan2023cnns}, and MTF \cite{wang2015imaging}.
 
-\subsection{DeepInsight}
+\subsubsection{DeepInsight}
 
 DeepInsight \cite{sharma2019deepinsight} applies t-SNE on the columns of $V$, resulting in each AP $k$ being mapped to a point in 2D space.
 The entire space is then rotated to fit within the minimum rectangular bounding box.
@@ -51,7 +63,7 @@ These rotated points then become the pixel coordinates for a given AP.
 The value of the RSSI of a given AP $k$ is then directly mapped to the value of its corresponding pixel.
 If multiple features share a pixel location, the average value of these features is then used as the value of the pixel.
 
-\subsection{REFINED}
+\subsubsection{REFINED}
 
 REpresentation of Features as Images with NEighborhood Dependencies \cite{bazgir2020representation} uses a technique the authors call ``Bayesian Multidimensional Scaling''.
 A 2D embedding of the data $V_{embed}$ is calculated using Multidimensional Scaling (MDS) with a Euclidean distance metric.
@@ -59,7 +71,7 @@ A pixel grid $P$ of $p^2$ pixels, where $p=\left\lceil \sqrt{K} \right\rceil$ is
 A mapping of features to pixels is calculated by considering all permutations which minimize the Euclidean distance of the pixel mapping to the feature location in $V_{embed}$ while keeping at most one feature per pixel iteratively.
 This final mapping is calculated using a hill-climb algorithm.
 
-\subsection{GAF}
+\subsubsection{GAF}
 
 Gramian Angular Fields \cite{wang2015imaging} first transform the incoming signal for each AP to polar coordinates with
 \begin{equation}
@@ -101,7 +113,8 @@ We call this transformation Feature-wise GAF (FGAF).
 
 In either case, $G$ is finally normalized.
 
-\subsection{MTF}
+\subsubsection{MTF}
+
 Markovian Transition Fields \cite{wang2015imaging} first quantizes the signal into $q$ bins, each bin representing an interval of RSSI strength.
 A Markovian transition matrix $M_{t}$ is then constructed where each row represents a fingerprint and each column a bin. 
 The values in $M_{t}$ are the size of each bin for a given sample.
@@ -152,11 +165,28 @@ To mitigate domain shift, we implement a novel method for unsupervised domain re
 	\begin{itemize}
 		\item We've used both these techniques before in a previous project, so implementation should be relatively straightforwards
 	\end{itemize}
+	\item \emph{Motivation}
+	\begin{itemize}
+		\item We use the RL agent inspired by \cite{ma2021location} and hypothesize that the RL architecture there can be extended to domain auto-labeling
+		\item We use the triplet-loss approach since triplet loss is a proven way to provide a numerical value showing the difference between two input
+		\begin{itemize}
+			\item In other words, this is analogous to testing the null hypothesis, where $H_0$ is no RL agent produced domain embedding and $H_1$ is a RL agent produced domain embedding
+			\item Our hypothesis is that the domain embedding will produce better results
+			\item If the RL agent can be trained, then the difference $(M\left(\hat{y}_{rl}, y\right)-M\left(\hat{y}_{0}, y\right)$ will approach $M\left(\hat{y}_{rl}, y\right)$ producing the maximum reward for the RL agent
+		\end{itemize}
+	\end{itemize}
 \end{itemize}
 
 \section{Multi-task Learning}\label{sec:methodology-multi-task-learning}
 
-The actual gesture classification module is built using a multi-task learning module.
+\begin{figure}
+	\centering
+	\includegraphics[width=0.8\linewidth]{figures/multitask_learning_module_diagram.pdf}
+	\caption{Details of the multi-task learning module. The generator is made up of a series of deconvolutional layers and produces the BVP prediction while the classifier is a fully connected network and produces a probability distribution over each gesture class.}
+	\label{fig:multitask-learning-module-diagram}
+\end{figure}
+
+The actual gesture classification module is built using a multi-task learning module, a visualization of which can be seen in Figure \ref{fig:multitask-learning-module-diagram}.
 
 \begin{itemize}
 	\item The idea is to enforce some sort of representation that \textit{can} be used to get a domain-independent representation of the data
@@ -169,5 +199,22 @@ The actual gesture classification module is built using a multi-task learning mo
 	\item The other head is a classifier head and classifies gestures
 	\item It's been shown that doing multi-task learning like this leads to good results with latent representations which are more robust \cite{tuggener2021deepscoresv2}
 	\item We duplicate this pair of heads to enable a reward function for the RL agent inspired by triplet loss
-	\item Loss function for the gesture classifier is cross entropy loss and for the BVP generator, it is binary-cross entropy loss.
+	\item Loss function for the gesture classifier is cross entropy loss
+	\item Loss function for the BVP generator is cross entropy loss on the produced image.
+	\item \emph{Motivation}
+	\begin{itemize}
+		\item We use multi-task learning since its been shown that multitask learning can produce better/more powerful/more robust/more efficient latent representations due to the latent representation being used for multiple tasks
+		\item For this multi-task objective, we use BVP as the target of the generator, since we have ground-truth BVP data and \cite{zheng2019zero} makes a point to show that BVP is domain-independent
+		\begin{itemize}
+			\item Therfore, if the generator can produce a BVP close to the ground-truth, then we have a latent representation that can be used to produce domain-independent features
+		\end{itemize}
+		\item We want try to get a latent representation capable of producing domain-independent features but we don't want to enforce it directly on the latent representation, since this may not work well \cite{van2022insights} and \cite{martini2021domain} suggests giving the representation some discriminatory abilities w.r.t. the domain.
+		\begin{itemize}
+			\item Therefore, we believe that enforcing domain independence on the output will result in a representation that is domain-independent enough yet still retain discriminatory power.
+		\end{itemize}
+		\item Cross Entropy loss on the produced image is used since it is the appropriate loss function for image generation (i.e., pixel-wise feature value prediction)
+		\item We use gesture as the target of the classifier, since that's the goal of this thesis
+		\item Cross Entropy loss on the prediction is used since it is the appropriate loss function for a multi-class prediction task.
+		
+	\end{itemize}
 \end{itemize}
