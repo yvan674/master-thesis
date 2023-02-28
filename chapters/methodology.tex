@@ -13,7 +13,7 @@ We first propose a signal preprocessing and signal-to-image transformation pipel
 This transforms the input signal into an image that is then passed through a CNN encoder, as described in Section {sec:methodology-signal-encoding}, encoding the signal into a latent representation.
 This latent representation is then used in two different ways: As an input for the multi-task learning heads, described in Section \ref{sec:methodology-multi-task-learning}, and as the state observation for our RL agent, described in Section \ref{sec:methodology-rl}.
 
-Two mitigate domain-shift, our RL agent is tasked with producing the best possible embedding of the domain $D_{r}$ as its action given the signal latent representation as its state observation.
+To mitigate domain-shift, our RL agent is tasked with producing the best possible embedding of the domain $D_{r}$ as its action given the signal latent representation as its state observation.
 
 To provide the RL agent with a reward function, inspired by triplet loss, we use two different multi-task learning modules.
 One of these modules is provided $D_{0}$, representing a vector of zeros, and the other $D_{r}$.
