@@ -2,9 +2,9 @@
 
 \begin{figure}[b]
 	\centering
-	\includegraphics[width=0.3\linewidth]{figures/phillips_hue}
-	\caption{A Phillips Hue Lightbulb, one example of an IoT smart lightbulb with an integrated Wi-Fi Radio \cite{ryles2022now}.}
-	\label{fig:phillips-hue-lightbulb}
+	\includegraphics[width=0.3\linewidth]{figures/wiz-a60-tunable-white}
+	\caption{A WiZ A60 Tunable White light bulb, one example of an IoT smart device with an integrated Wi-Fi Radio \cite{signify2020wiz}.}
+	\label{fig:wiz-lightbulb}
 \end{figure}
 
 In this ever more connected climate that we find ourselves in, IoT devices everywhere are adding little conveniences to our every day lives.
@@ -27,7 +27,7 @@ For example, in the case of smart lights or smart thermostats, the end device wo
 In both cases, a separate control unit, the light switch or thermostat, respectively, is still required.
 
 With these challenges in mind, Wi-Fi-based sensing provides one potential solution.
-Many IoT devices already contain some sort of Wi-Fi radio, such as the Phillips Hue Light bulb in Figure \ref{fig:phillips-hue-lightbulb}, and it would be a rather safe assumption to make that spaces with IoT devices would also have some sort of Wi-Fi infrastructure in place as well.
+Many IoT devices already contain some sort of Wi-Fi radio, such as the Phillips Hue Light bulb in Figure \ref{fig:wiz-lightbulb}, and it would be a rather safe assumption to make that spaces with IoT devices would also have some sort of Wi-Fi infrastructure in place as well.
 With this in mind, the idea of a gesture-based interface based around Wi-Fi becomes rather appealing.
 The use of Channel-State Information (CSI) also enables of finer-grain signals to be extracted from consumer-grade Wi-Fi radios, enough to enable reliable gesture recognition \cite{adib2013see}.
 This method does, though, suffer from the domain-shift problem, achieving the best accuracy only in cases with a prediction model fine-tuned to a specific person and environment is used.
@@ -58,16 +58,21 @@ This shows there is genuine interest in the industry to utilize WLAN for these p
 With an approval date set for September 2024, it is clear that WLAN sensing is not just some theoretical possibility confined to a lab, but rather a very real technology that may soon become widespread.
 
 To make such an approach possible, we utilize machine learning (ML) to process the incoming CSI data and classify user gestures.
-Wi-Fi technology, when boiled down, is just a really complex radio and what is radar but a different form of very complex radio.
-It naturally, or not so naturally, follows then, can Wi-Fi be used for remote sensing analogously to radar technology?
+Wi-Fi technology, while being very different to radar technology, are both forms of radio technology.
+Although topologically very different, it naturally, or not so naturally, follows then, can Wi-Fi be used for remote sensing?
 The answer to this question, according to \cite{adib2013see} and \cite{chetty2011through}, the answer is a resounding yes!
+
+There are even commercial products which have become available on the commercial market during the writing of this very thesis that incorporates parts of this technology. 
+Signify's line of WiZ smart lights uses \textit{SpaceSense} technology, which is a proprietary algorithm that detects motion through ``disturbances [in the Wi-Fi signal] created by a person's presence'' and is available through a software update \cite{signify2023spacesense}.
+It should be noted, though, that this is only capable of presence detection and not of gesture recognition.
 
 However, ML suffers from degraded performance when faced with domain-shifts.
 When dealing with new, unseen users and environments, gesture classification accuracy degrades significantly \cite{chetty2011through,adib2013see,pu2013whole,adib20143d,he2015wig,jiang2018towards,zheng2019zero,jiang2020wigan,ma2021location}.
 As such, factors to mitigate this domain-shift problem are required in any implementation outside of a pristine laboratory setting.
 
 For the purposes of our thesis, the Wi-Fi information we utilize for gesture classification is known as the Channel State Information (CSI).
-This comes in the form of two signals, an amplitude and phase shift, for each receiver access point (AP) from each transmitting AP.
+This comes in the form of a set of complex numbers denoting signal differences for each receiver access point (AP) from each transmitting AP.
+This complex number can then be represented as a set of amplitudes, or radii, and phase shifts, or angles, when considered as polar coordinates on the complex plane.
 CSI itself is a description of the multipath effects of a signal traveling from the transmitting AP to the receiving AP.
 In the realm of WLAN, the estimated CSI of incoming signals is used to correct for these multipath effects, making it possible for the system to adapt to current environmental conditions.
 Importantly, human activity in an environment also affects the CSI, making it possible to infer activity through CSI.

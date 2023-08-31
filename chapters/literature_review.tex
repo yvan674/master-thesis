@@ -132,7 +132,8 @@ The following section contains some selected works in domain shift mitigation, m
 
 Zhang et al. in 2021 published research into using RL based feature selection for domain shift mitigation \cite{zhang2021adversarial}.
 The proposed method would be able to select the most relevant features across two domains by employing Q-learning to learn policies for feature selection, utilizing the performance of a domain discriminator as its reward function.
-By doing so, they attempt to align the feature manifolds between both domains.
+By doing so, they attempt to align the feature manifolds between both domains and produce domain invariant features in the vision field through the use of reinforcement learning.
+This also has led to our own hypothesis that reinforcement learning can be used for domain auto-labeling.
 Benchmarked on publicly available datasets, this method achieves the best mean accuracy among SOTA methods.
 
 Martini et al. published a technique called ``Domain-Adversarial Neural Networks'' in 2021 \cite{martini2021domain}.
