@@ -1,0 +1,121 @@
+\chapter{Background Knowledge}\label{chapter:background-knowledge}
+
+In this chapter, we will explore some of the background knowledge required to understand the methodology chosen and experiments undertaken throughout this thesis.
+We will first explore Variable Autoencoders before delving into some background about Reinforcement Learning and finally concluding with a discussion of Wi-Fi Channel State Information (CSI) and Body-coordinate Velocity Profiles (BVP).
+
+\section{Variational Autoencoders}
+
+Variational autoencoders (VAEs) are a type of generative model which combines elements of both autoencoders and probabilistic modeling and are suited for unsupervised learning and representation learning and was first introduced by Kingma and Weling in \cite{kingma2013auto}.
+Standard autoencoders are a network architecture in which data is encoded into a lower-dimensional latent space by an encoder.
+A decoder then reconstructs the original input from the latent representation.
+VAEs introduce probabilistic modeling to autoencoders by using a probability distribution over the latent space instead of using the latent space directly.
+
+Its original design aimed at using a generative model as an implicit form of regularization.
+By forcing the model to learn a representation which is also useful for data generation, the representation learned must have some sort of statistically independent but meaningful representation of the variations in the input data, leading to better performance at both the auxiliary task of data generation as well as the main task of discrimination \cite{kingma2019introduction}.
+
+Generally, VAEs are described as two coupled but independent models: the encoder and decoder.
+The encoder is a Bayesian network of the form $q(\boldsymbol{z} | \boldsymbol{x})$ where $\boldsymbol{z}|\boldsymbol{x}$ may be a (deep) neural network.
+Similarly, the decoder is also a Bayesian network of the form $p(\boldsymbol{x}|\boldsymbol{z}) p(\boldsymbol{z})$ where $\boldsymbol{x}|\boldsymbol{z}$ may also be a (deep) neural network.
+The input signal $\boldsymbol{x}$ is thus represented by $\boldsymbol{z}$.
+
+The purpose of the encoder $q_\phi(\boldsymbol{z}|\boldsymbol{x})$ with parameters $\phi$ is to produce an approximation of the true, but intractable, posterior.
+The encoder neural network is then used to produce the set of parameters for latent variables such that
+
+\begin{align}
+	(\boldsymbol{\mu}, \log \boldsymbol{\sigma}) &= \text{EncoderNeuralNet}_\phi (\boldsymbol{x})\\
+	q_\phi(\boldsymbol{z}|\boldsymbol{x}) &= \mathcal{N}(\boldsymbol{z}; \boldsymbol{\mu}, \text{diag}(\boldsymbol{\sigma}))
+\end{align}
+where $\mathcal{N}$ is the normal distribution.
+
+The purpose of the decoder $p_\theta (\boldsymbol{x}|\boldsymbol{z})$ is to produce a mapping between the latent space $p_\theta (\boldsymbol{z})$ and the original, observed distribution through learning a joint distribution $p_\theta (\boldsymbol{x}, \boldsymbol{z}) = p_\theta (\boldsymbol{z})p_\theta (\boldsymbol{x}|\boldsymbol{z})$.
+
+The VAE is optimized through the evidence lower bound (ELBO), which incorporates Kullback-Leibler divergence, the details of which are thoroughly explained in \cite{kingma2019introduction}.
+
+By using the reparameterization trick introduced in \cite{kingma2013auto}, the ELBO can then be differentiated with respect to both parameters $\phi$ and $\theta$ at the same time through stochastic gradient descent.
+
+VAEs are used in various areas including image generation, data compression, denoising, and image recognition.
+By using a latent representation of the data which is statistically meaningful, the generated data is much more likely to come from the same underlying distribution as the original data.
+
+\section{Reinforcement Learning}
+
+Reinforcement learning (RL) is a machine learning paradigm which teaches agents how to make decision in complex environments \cite{tavakol2022dic}.
+The general paradigm is that of an agent which takes actions in an environment as a response to its observations of the current environment state.
+The environment then provides a reward for the agent and transitions into a new state as a response to the action.
+The agent is given the goal of maximizing the cumulative reward over time.
+The main use cases of RL are in robotics, gaming, finance, and healthcare where performing complex tasks or optimizing control systems is necessary.
+
+Throughout this work, we focus on model-free RL.
+Model-free RL is an approach to RL which focuses on learning directly from interactions with the environment without necessarily modeling the dynamics of the environment explicitly.
+With this approach, the agent learns policies or value functions which it uses to make decisions.
+Some well-known model-free RL algorithms include Q-Learning, State-Action-Reward-State-Action (SARSA), Deep Q-Networks (DQN), Proximal Policy Optimization (PPO), and Asynchronous Advantage Actor-Critic (A3C).
+
+Furthermore, there are two main learning paradigms to RL, namely on- and off-policy learning.
+
+On-policy RL learns directly from data collected by the current policy.
+This entails updating the policy directly using data, i.e., the reward gathered, of the same policy.
+This makes it especially suitable for scenarios where data collection is cheap, for whatever measure of cheap is appropriate in the given scenario.
+By updating the policy directly, the learning trajectory may be more stable due to consistency.
+On the other hand, this same consistency can lead to reduced exploration of the action space as well as reduced sample efficiency due to the slow exploration.
+An example of this learning paradigm is PPO, which is one of the two methods used in this thesis.
+
+Off-policy RL, conversely, learns from a \textit{replay buffer} of past experiences.
+A replay buffer is a store of past experiences that an agent has experienced.
+During each step taken where the agent interacts with its environment, the action and resulting observation and reward is stored.
+During the update stage, a random sampling from the replay buffer is then taken and used to update the agent's policy or value function.
+By doing so, this enables \textit{off-policy} learning, where the agent learns from previous experiences, including those performed under a different policy.
+This also allows for updates to be performed in batches, increasing throughput.
+The increased data diversity and ability to use samples from previous policies leads to better exploration and better sample efficiency.
+One example of off-policy RL is Deep Deterministic Policy Gradient (DDPG).
+
+\subsection{Proximal Policy Optimization}
+
+PPO is a model-free on-policy RL algorithm proposed in Schulman et al. \cite{schulman2017proximal}.
+It is a further development based on Trust Region Policy Optimization (TRPO) \cite{schulman2017trust} and works by iteratively sampling data through interactions with the environment and optimizing a ``surrogate'' objective function using stochastic gradient ascent. The paper explores two approaches to this ``surrogate'' function, one using a penalty on KL divergence and one using a clipped objective function.
+
+In the KL divergence approach, for each update of a given policy $\pi_\theta$, the KL-penalized objective $L^{KLPEN}$ is optimized with
+
+\begin{equation}
+	L^{KLPEN}(\theta) = \hat{\mathbb{E}}_t \left[\frac{\pi_theta(a_t | s_t)}{\pi_{\theta_{old}} (a_t | s_t)} \hat{A}_t - \beta KL \left( \pi_{\theta_{old}} (\cdot | s_t), \pi_theta(\cdot | s_t)\right) \right]
+\end{equation}
+where $t$ is the current timestep, $a$ the action, $s$ the environment state, $\hat{A}_t$ an estimator of the advantage function at timestep $t$, and $\hat{\mathbb{E}}_t$ the empirical average over a finite batch of samples.
+With every policy update, we also update $\beta$ by first computing $d = \hat{\mathbb{E}}_t\left(\pi_{\theta_{old}} (\cdot | s_t), \pi_{\theta}(\cdot | s_t)\right)$.
+If $d < d_{targ} / 1.5$, then we half $\beta$.
+If $d > d_{targ} \times 1.5$, then we double $\beta$. $\beta$ is a hyperparemter that can be chosen, but is ``not important in practice because the algorithm quickly adjusts it'' \cite{schulman2017proximal}.
+
+In the clipped surrogate objective approach, for each update of the policy, the clipped surrogate objective $L^{CLIP}$ for a given policy $\pi_\theta$ is updated, where
+
+\begin{align}
+	L^{CLIP}(\theta) &= \min \left[ 
+		\frac{\pi_theta(a_t | s_t)}{\pi_{\theta_{old}} (a_t | s_t)} \hat{A}_t, g(\epsilon, \hat{A}_t)
+	\right]
+	\text{where } g(\epsilon, \hat{A}_t) &= \begin{cases}
+		(1 + \epsilon) \cdot \hat{A}_t & \hat{A}_t \geq 0 \\
+		(1 - \epsilon) \cdot \hat{A}_t & \hat{A}_t < 0
+	\end{cases}
+\end{align}
+
+The clipped surrogate object approach shows better empirical performance in \cite{schulman2017proximal} and is the one that we use in this thesis.
+
+The algorithm itself is relatively simple and is best understood by directly reading the pseudocode seen in Algorithm \ref{algo:ppo}.
+
+\begin{algorithm}
+	\SetAlgoLined
+	\SetKwInput{KwInput}{Input}
+	\SetKwInput{KwOut}{Output}
+	\KwInput{Initialize policy parameters $\theta_0$ and value function parameters $\phi_0$}
+	\For{$k=0, 1, 2,\ldots$}{
+		Collect trajectories $\mathcal{D}_k = \{\tau_i\}$ by running policy $\pi_k=\pi_{\theta_k}$ in the environment\;
+		Compute rewards $\hat{R}_t$ for each action\;
+		Calculate advantage estimates $\hat{A}_t$ using the value function $V_{\phi_k}$\;
+		Update the policy by maximizing $L^{CLIP}$:
+		\begin{equation}
+			\theta_{k+1} = \arg \underset{\theta}{\min} \frac{1}{|\mathcal{D}_k|T} \sum_{\tau \in \mathcal{D}_k} \sum_{t=0}^{T} L^{CLIP} 
+		\end{equation}
+		using Adam\;
+		Fit the value function by regression on mean-squared error over the collected trajectories $\mathcal{D}_k$\;
+	}
+	\caption{Proximal Policy Optimization (PPO) Algorithm}\label{algo:ppo}
+\end{algorithm}
+
+\subsection{Deep Deterministic Policy Gradient}
+
