@@ -22,7 +22,7 @@ Our intuition comes from \cite{zhang2021adversarial} in which RL was used to ide
 Analogously, we hypothesize that RL can then be used to identify those features which are \textit{not} invariant to domain shifts and produce a \textit{domain embedding} from said features.
 We hypothesize that by providing our gesture discriminator with not only the original signal, encoded by a VAE-style encoder, but also this domain embedding, the gesture discriminator would be able to significantly increase its performance in gesture recognition throughout multiple domains.
 
-The general architecture of DARLInG can be seen in Figure \ref{fig:arch-diagram}.
+The general architecture of DARLInG can be seen in Figure \ref{fig:arch-diagram} and the code can be found publicly on GitHub\footnote{\href{https://github.com/yvan674/DARLInG}{https://github.com/yvan674/DARLInG}}.
 We first propose a signal preprocessing and signal-to-image transformation pipeline, described in Section \ref{sec:methodology-signal-preprocessing} and \ref{sec:methodology-signal-to-image}.
 This transforms the input signal into an image that is then passed through a CNN encoder, as described in Section \ref{sec:methodology-signal-encoding}, encoding the signal into a latent space.
 This latent representation is then used in two different ways: As an input for the multi-task learning heads, described in Section \ref{sec:methodology-multi-task-learning}, and as the state observation for our RL agent, described in Section \ref{sec:methodology-rl}.
@@ -163,27 +163,68 @@ The plot clearly shows that there is no general trend of phases increasing or de
 The next stage in our method is transform the signal into an image, leveraging advances from computer vision.
 There are many works from the literature which show that there are certainly improvements that can be gained from performing image processing on temporal data.
 We will experiment with the following four methods for signal-to-image transformation: Gramian Angular Fields (GAF) \cite{wang2015imaging}, Markov Transition Fields (MTF) \cite{wang2015imaging}, and Recurrent Plots (RP) \cite{eckmann1995recurrence}.
+A more comprehensive description of each of these transformations can be found in Section \ref{sec:background-signal-to-image}.
 
-Regardless of the chosen method, the signal has now been transformed into an image and we can proceed with the encoding of this image into a latent space.
+We process these images in Python using the pyts package \cite{faouzi2020pyts}, which conveniently contains ready-to-use implementations of all three of the aforementioned transformations.
+Regardless of the chosen transformation, the signal is transformed into a two-dimensional tensor which can be treated as an image.
+We also downsample this image to a size of $40 \times 40$ pixels for computational complexity purposes, which still provides a temporal resolution double that of the provided BVP data in Widar 3.0.
+We can proceed then proceed with the encoding of this image into a latent space.
 
 \section{Signal encoding}\label{sec:methodology-signal-encoding}
 
-The encoding of the signal, now an image, into a latent space is performed using CNN-based image processing methods.
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{figures/vae-diagram}
+	\caption{The CNN-based VAE used in DARLInG. The number of ConvBlock elements is variable, depending on the experiment being performed. The reparameterization trick is the same trick described in \cite{kingma2013auto}.}\label{fig:vae-diagram}
+\end{figure}
 
-\begin{itemize}
-	\item The signal encoding backbone is a standard CNN
-	\item This will probably be something simple, like ResNet since the signal shouldn't be too complex that it requires something very SOTA
-	\item Alternatively, mobilenet may be used as well
-	\item This may actually be the least important aspect of this thesis
-\end{itemize}
+The encoding of the signal, now an image, into a latent space is performed using a Convolutional Neural Network (CNN)-based VAE.
+The CNN itself is structured as a standard, deep CNN, made up of multiple \verb|ConvBlock|s where each block is made up of a \verb|Conv2d| with dropout, a batch norm layer, and an activation layer.
+The number of input channels, filters, and kernel size of the \verb|Conv2d| layer and its dropout is set dynamically and differs by experiment.
+The activation layer also differs by experiments and is either ReLU, LeakyReLU, or SeLU.
+The number of \verb|ConvBlock|s is set dynamically and differs by experiment.
 
-The latent representation of this signal is then passed to both the reinforcement learning agent as its state observation as well as to the multi-task learning modules.
+These blocks are then followed by two sets of two fully connected layers with a hidden layer size of 8192.
+One set of these fully connected layers serve to predict the $\mu$ of the other set to predict the $\log \sigma$ of the latent variables.
+The reparameterization trick is then used, adding a random variable $\mathcal{N}(0, 1)$ to produce the latent variables $\boldsymbol{z}$.
+A visualization of the CNN-based VAE used can be seen in Figure \ref{fig:vae-diagram}.
+
+The latent representation $\boldsymbol{z}$ of this signal is then passed to both the reinforcement learning agent as its state observation as well as to the multi-task learning modules.
 How the RL agent uses this state observation is described in Section \ref{sec:methodology-rl} while its use by the multi-task learning module is described in Section \ref{sec:methodology-multi-task-learning}.
 
-\section{Unsupervised Domain Representations through Reinforcement Learning}\label{sec:methodology-rl}
+\section{Multi-task Learning}\label{sec:methodology-multi-task-learning}
 
-\subsection{Reward Function}\label{subsec:methodology-reward}
+\begin{figure}
+	\centering
+	\includegraphics[width=0.8\linewidth]{figures/multitask_learning_module_diagram.pdf}
+	\caption{Details of the multi-task learning module. The generator is made up of a series of deconvolutional layers and produces the BVP prediction while the classifier is a fully connected network and produces a probability distribution over each gesture class.}
+	\label{fig:multitask-learning-module-diagram}
+\end{figure}
+
+The actual gesture classification module is built using a multi-task learning module, a visualization of which can be seen in Figure \ref{fig:multitask-learning-module-diagram}.
+The idea, intuitively, is to enforce some sort of representation that is already approaching a domain-invariant representation of the data.
+To do so, we use the generation of the BVP as an auxiliary task while keeping gesture recognition as our main task.
+This is done as BVP is theoretically domain-independent \cite{zheng2019zero}, even though we are ultimately not interested in the BVP.
+This approach is inspired by Martini et al. \cite{martini2021domain}, which, although using a different metric to modulate domain-independence as an optimization objective, suggests that an adversarial approach modulating both a domain-independence objective and a domain-discrimination objective can be powerful and increase classification performance.
+The BVP generation is done by a series of deconvolutional layers while the classifier is a series of fully-connected layers.
+Additionally, it has been shown empirically that multi-task learning can produce better results in each target task as opposed to dedicated networks \cite{tuggener2021deepscoresv2}.
+This is likely due to the encoder being guided towards producing a more robust or efficient latent representation capable of being used for many different tasks instead of a latent representation focused on only one task.
+
+Therefore, as BVP generation is a theoretically domain-independent process, we should expect the latent representation to contain both features which are completely domain independent as well as features which are not.
+We do not, however, want to enforce domain-independence directly on the latent representation, as this may result in worse performance \cite{van2022insights}.
+Further, \cite{martini2021domain} supports giving the latent representation domain-discriminatory powers.
+
+As seen in Figure \ref{fig:arch-diagram}, we utilize two multi-task learning modules. The module receiving $\boldsymbol{d}_\emptyset$ is termed the \textit{null head} while the module receiving $\boldsymbol{d}_r$ is termed the \textit{embed head}. 
+The motivation behind the use of two heads is such that we can measure the RL agent's performance in an unsupervised manner by comparing the performance of the null head to the embed head.
+Intuitively, we should expect the embed head to perform better if the embedding $\boldsymbol{d}_r$ provided by the RL agent is able to provide some useful information, likely with respect to the domain, as opposed to the null head, which receives no useful information.
+This comparison of the performance of the two embed heads is inspired by triplet loss.
+
+For the loss function, we use cross entropy loss on the gesture classifier and mean squared error loss on the BVP generation.
+
+\section{Reinforcement Learning Agent}\label{sec:methodology-rl}
+
 To mitigate domain shift, we implement a novel method for unsupervised domain representations through reinforcement learning.
+Recall the common terminology used in RL: the agent, the action $a$, the state observation $s$, and the reward $r$.
 
 \begin{itemize}
 	\item Base terminology: Agent, action, state observation (state), and reward
@@ -221,44 +262,10 @@ To mitigate domain shift, we implement a novel method for unsupervised domain re
 	\end{itemize}
 \end{itemize}
 
-\section{Multi-task Learning}\label{sec:methodology-multi-task-learning}
+\subsection{Reward Function}\label{subsec:methodology-reward}
 
-\begin{figure}
-	\centering
-	\includegraphics[width=0.8\linewidth]{figures/multitask_learning_module_diagram.pdf}
-	\caption{Details of the multi-task learning module. The generator is made up of a series of deconvolutional layers and produces the BVP prediction while the classifier is a fully connected network and produces a probability distribution over each gesture class.}
-	\label{fig:multitask-learning-module-diagram}
-\end{figure}
+TODO
 
-The actual gesture classification module is built using a multi-task learning module, a visualization of which can be seen in Figure \ref{fig:multitask-learning-module-diagram}.
+\section{Model Training}\label{sec:methodology-training}
+todo
 
-\begin{itemize}
-	\item The idea is to enforce some sort of representation that \textit{can} be used to get a domain-independent representation of the data
-	\item We utilize multi-task learning for this, where one head is used to predict BVP, which is theoretically domain-independent \cite{zheng2019zero}
-	\begin{itemize}
-		\item We are not actually interested in the BVP, but having it as part of our training will enforce the need for a representation which is theoretically domain-independent.
-		\item \cite{martini2021domain} suggests the use of MMD and an adversarial approach to training the model to ensure that while the representation is domain-invariant, it still retains enough discriminatory powers such that the domain classifier can still perform.
-		\item Instead of this approach, we use the BVP prediction to enforce a representation which is domain-invariant and we use an RL agent instead of the domain classifier suggested in \cite{martini2021domain}.
-	\end{itemize}
-	\item The other head is a classifier head and classifies gestures
-	\item It's been shown that doing multi-task learning like this leads to good results with latent representations which are more robust \cite{tuggener2021deepscoresv2}
-	\item We duplicate this pair of heads to enable a reward function for the RL agent inspired by triplet loss
-	\item Loss function for the gesture classifier is cross entropy loss
-	\item Loss function for the BVP generator is cross entropy loss on the produced image.
-	\item \emph{Motivation}
-	\begin{itemize}
-		\item We use multi-task learning since its been shown that multitask learning can produce better/more powerful/more robust/more efficient latent representations due to the latent representation being used for multiple tasks
-		\item For this multi-task objective, we use BVP as the target of the generator, since we have ground-truth BVP data and \cite{zheng2019zero} makes a point to show that BVP is domain-independent
-		\begin{itemize}
-			\item Therfore, if the generator can produce a BVP close to the ground-truth, then we have a latent representation that can be used to produce domain-independent features
-		\end{itemize}
-		\item We want try to get a latent representation capable of producing domain-independent features but we don't want to enforce it directly on the latent representation, since this may not work well \cite{van2022insights} and \cite{martini2021domain} suggests giving the representation some discriminatory abilities w.r.t. the domain.
-		\begin{itemize}
-			\item Therefore, we believe that enforcing domain independence on the output will result in a representation that is domain-independent enough yet still retain discriminatory power.
-		\end{itemize}
-		\item Cross Entropy loss on the produced image is used since it is the appropriate loss function for image generation (i.e., pixel-wise feature value prediction)
-		\item We use gesture as the target of the classifier, since that's the goal of this thesis
-		\item Cross Entropy loss on the prediction is used since it is the appropriate loss function for a multi-class prediction task.
-		
-	\end{itemize}
-\end{itemize}
