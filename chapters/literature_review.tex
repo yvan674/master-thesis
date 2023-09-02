@@ -83,7 +83,7 @@ Three Wi-Fi CSI datasets for gesture recognition were considered for this thesis
 
 The Widar 3.0 dataset, forthwith referred to as the Widar dataset for brevity, presents a dataset with developed specifically for ``cross-domain learning solutions'' \cite{zheng2019zero}.
 The solution provided in this dataset is two-fold: 1) the (relatively) high number of domains that the data was collected with, and 2) the proposal of Body-coordinate Velocity Profile (BVP) with is a theoretically domain-independent representation of the data.
-More details of BVP is discussed in Section \todo{Desecribe in background section}.
+More details of BVP is discussed in Section \ref{sec:background-bvp}.
 Finally, this paper also provides a baseline model to compare against.
 
 SignFi is a dataset of Wi-Fi CSI data specifically for sign language recognition \cite{ma2018signfi}.
@@ -97,10 +97,10 @@ This dataset was collected specifically for pose estimation solutions and is not
 \section{Signal-to-Image Transformations}
 
 Different preprocessing methods have been investigated to transform raw tabular data into images for deep learning.
-Four state-of-the-art approaches are DeepInsight \cite{sharma2019deepinsight}, REFINED \cite{bazgir2020representation}, GAF, and MTF \cite{wang2015imaging}.
+Four state-of-the-art approaches are Gramian Angular Fields (GAF), Markov Transition Fields (MTF) \cite{wang2015imaging}, and Recurrent Plots (RP) \cite{eckmann1995recurrence}.
 A search of the current body of literature did not yield any research into a direct comparison of these techniques on a common dataset.
-Instead, a previous unpublished work by the author of this thesis for the Seminar course at the TU/e has shown that these four methods performed best among state-of-the-art signal-to-image transformations \cite{satyawan2023cnns}.
-A more thorough description of each of these methods are described in Section \todo{Describe in background section}
+Instead, a previous unpublished work by the author of this thesis for the Seminar course at the TU/e has shown that these GAF and MTF performed amongst the best of the state-of-the-art signal-to-image transformations \cite{satyawan2023cnns}.
+A more thorough description of each of these methods are described in Section \ref{sec:background-signal-to-image}.
 
 \section{Domain Shift Mitigation Methods}
 
