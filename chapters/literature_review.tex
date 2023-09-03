@@ -31,7 +31,7 @@ Their target is to standardize these requirements for future devices both in the
 They additionally provide suggestions for what methods can be then be used to interpret the data provided, including the use of Fast Fourier Transform (FFT) algorithms to calculate a Channel Impulse Response from CSI and a Doppler FFT, which may be directly used for gesture recognition.
 The standards for 802.11bf is set to be ratified and published by September 2024.
 
-\section{Wi-Fi CSI for Gesture Recognition}
+\section{Wi-Fi CSI for Gesture Recognition}\label{sec:literature-csi-for-gesture}
 
 A selection of works which utilize Wi-Fi CSI data specifically for the task of gesture recognition are discussed in this section.
 
@@ -126,7 +126,7 @@ Finally, the 2022 bachelors thesis by Sips investigates the use of network pruni
 The basic concept is to improve model robustness by enforcing sparsity and utilizing mixed precision training.
 Tested against a baseline where sparsity and mixed precision training was not used, the modified networks performed slightly worse on in-domain test samples while they had mixed results on out-of-domain samples.
 
-\section{Domain Shift Mitigation using Reinforcement Learning}
+\section{Domain Shift Mitigation using Reinforcement Learning}\label{sec:literature-domain-rl}
 
 The following section contains some selected works in domain shift mitigation, mainly those related directly with RL of self-supervised techniques.
 
@@ -143,5 +143,3 @@ The loss function of the model balances the label predictor loss, using Cross En
 Additionally, the paper proposes the use of Maximum Mean Discrepancy (MMD) to measure the difference between two domains.
 The MMD measures the kernel-based difference between feature means of each domain.
 This work proposes the use of MMD with the goal of minimizing this distance while maintaining the distinctness of each domain, allowing for the domain classifier to still work.
-
-\todo[inline]{Add the discrete wavelet transform paper "A WiFi-based Smart Home Fall Detection System using Recurrent Neural Network." \cite{ding2020wifi}}

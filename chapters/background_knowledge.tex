@@ -37,7 +37,7 @@ By using the reparameterization trick introduced in \cite{kingma2013auto}, the E
 VAEs are used in various areas including image generation, data compression, denoising, and image recognition.
 By using a latent representation of the data which is statistically meaningful, the generated data is much more likely to come from the same underlying distribution as the original data.
 
-\section{Reinforcement Learning}
+\section{Reinforcement Learning} \label{sec:background-rl}
 
 Reinforcement learning (RL) is a machine learning paradigm which teaches agents how to make decision in complex environments \cite{tavakol2022dic}.
 The general paradigm is that of an agent which takes actions in an environment as a response to its observations of the current environment state.
@@ -68,7 +68,7 @@ This also allows for updates to be performed in batches, increasing throughput.
 The increased data diversity and ability to use samples from previous policies leads to better exploration and better sample efficiency.
 One example of off-policy RL is Deep Deterministic Policy Gradient (DDPG).
 
-\subsection{Proximal Policy Optimization}
+\subsection{Proximal Policy Optimization}\label{subsec:background-ppo}
 
 PPO is a model-free on-policy RL algorithm proposed in Schulman et al. \cite{schulman2017proximal}.
 It is a further development based on Trust Region Policy Optimization (TRPO) \cite{schulman2017trust} and works by iteratively sampling data through interactions with the environment and optimizing a ``surrogate'' objective function using stochastic gradient ascent. The paper explores two approaches to this ``surrogate'' function, one using a penalty on KL divergence and one using a clipped objective function.
@@ -143,7 +143,7 @@ where $\theta_i$ are the parameters of the Q-network at iteration $i$ and $\thet
 $\theta_i^-$ are only updated with the Q-network parameters $\theta_i$ every $C$ steps and are otherwise kept fixed.
 
 
-\subsection{Deep Deterministic Policy Gradient}
+\subsection{Deep Deterministic Policy Gradient}\label{subsec:background-ddpg}
 
 DDPG builds on DQNs and extends the action space to continuous action spaces \cite{lillicrap2015continuous}.
 Extending the action space by simply discretizing a continuous action space is not viable due to the curse of dimensionality that comes with too many output dimensions.
