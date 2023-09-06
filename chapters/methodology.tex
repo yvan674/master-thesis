@@ -329,16 +329,17 @@ The general training process of the model is described in Algorithm \ref{algo:da
 We set the training of the RL agent to begin only at epoch $\zeta$ to ensure that the latent representation provided by the encoder has somewhat stabilized and actually contains useful information.
 Otherwise, the RL agent will be training on garbage observation states.
 This is especially relevant for DDPG, as the replay buffer may contain observations from those garbage environment states even during the later stages of training.
+We alternate training between the RL agent and the VAE, rather than training both simultaneously, as we believe this will lead to more stable performance.
 
 \begin{algorithm}
 	\KwIn{Initialize parameters of the encoder $q$, the decoder of one multi-task learning module $p$, and the gesture classifier of one multi-task learning module $g$}
 	\KwIn{$\zeta$, the epoch to begin phase 2 of training}
 	\For{$k=0, 1, \ldots, N$}{
-		\If{$k=\zeta$}{
-			Duplicate the multi-task learning module and its optimizer. The original multi-task learning module is designated the \textit{null head} and the new module the \textit{embed head}\;
-			Initialize the RL agent\;
-		}
 		\If{$k \geq \zeta$}{
+			\If{$k=\zeta$}{
+				Duplicate the multi-task learning module and its optimizer. The original multi-task learning module is designated the \textit{null head} and the new module the \textit{embed head}\;
+				Initialize the RL agent\;
+			}
 			Freeze the parameters of the encoder $q$ and both the null and embed head\;
 			Train the RL agent for $h$ epochs with samples from the training dataset, using the latent representation of a datapoint encoded by the encoder as a state observation\;
 			Freeze the parameters of the RL agent\;
@@ -348,3 +349,6 @@ This is especially relevant for DDPG, as the replay buffer may contain observati
 	}
 	\caption{Simplified DARLInG Training Algorithm}\label{algo:darling-training}
 \end{algorithm}
+
+
+
