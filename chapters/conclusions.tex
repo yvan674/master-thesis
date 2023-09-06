@@ -1,3 +1,10 @@
 \chapter{Conclusions}\label{chapter:conclusions}
 
-Write your conclusions here.
+In this thesis, we have presented DARLInG (Domain Auto-labeling through Reinforcement Learning for the Identification of Gestures), our approach to domain-shift mitigation using unsupervised label generation through reinforcement learning.
+Our model incorporates a Variational Autoencoder as the main encoder-decoder-classifier model while testing both Deep Deterministic Policy Gradient and Proximal Policy Optimization as the Reinforcement Learning agent for domain label generation.
+We have tested this approach on a single-user leave-out split of the Widar 3.0 \cite{zheng2019zero} dataset.
+
+Our results are inconclusive, but indicate that there \textit{may} be some promise to our approach.
+Our limited time and compute resources may have contributed to the limited performance of our RL agents, which may be the cause of our limited performance overall.
+What results we do have, though, show that DARLInG does generally increase performance, or at least does not negatively impact performance, over a standard VAE's performance at cross-domain gesture recognition.
+As such, we conclude that, DARLInG as an approach to domain-shift mitigation, may have potential although future research will be necessary to confirm if this is the case.
