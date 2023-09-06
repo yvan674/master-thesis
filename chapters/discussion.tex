@@ -1,0 +1,37 @@
+\chapter{Discussion}
+
+We have shown that our approach is capable of generally improving F1-scores in Widar 3.0, but our overall performance is disappointing, compared to both baselines and state-of-the-art approaches.
+In this chapter, we discuss the experimental results and what these results mean with respect to our research questions, potential reasons for the low performance of our experiments, as well as suggest future research that may be taken.
+
+\section{Research questions}
+
+In this section, we answer each of the research questions we posited in Section \ref{sec:intro-problem-statement}.
+
+\paragraph{Research Question 1}
+Our first question asks how well DARLInG's embed heads perform compared to its null heads.
+The results from Section \ref{sec:experiments-setup-results} show that using an RL agent indeed has the potential to increase out-of-domain performance by up to 6.2 percentage points but may also provide no benefit.
+Using MTF as the transform, DDPG as the RL agent, and one-hot encoding as the domain embedding encoding provides our best results, but its low performance with the two other transforms suggest that this may not always be the case.
+As such, we can conclude that while not very satisfying, our results suggest that using RL to provide unsupervised domain labels \textit{may} provide better out-of-domain performance on Widar 3.0.
+
+\paragraph{Research Question 2}
+Our second question asks how changing the domain embedding encoding affects performance.
+Generally, we see inconclusive results with both encodings providing no meaningful difference generally while providing some difference with DDPG with MTF and RP transforms.
+Even in these two cases, though, the difference is inconclusive as MTF prefers one-hot encoding while RP prefers probability measure encoding.
+As a result, we believe that the domain embedding is not significant and that other factors contribute more towards the performance of the model.
+Further research may be necessary to investigate the optimal encoding of the domain embedding.
+
+\paragraph{Research Question 3}
+Our last research question asks how changing the signal-to-image transformation affects performance.
+Our results indicate that generally, GAF performs consistently, but not impressively.
+MTF seems to perform quite well with DDPG and similarly to GAF with PPO.
+RP seems to perform poorly with PPO, not improving over the null head, while performing similarly to MTF with DDPG.
+As a result, we can confidently conclude that different signal-to-image transformations affect model performance, but the results are inconclusive as to which transformation works best.
+The results do suggest, though, that MTF may be the best performer in our experiments of limited sample size.
+
+\section{Low Performance}
+¯\textbackslash\_(ツ)\textbackslash\_/¯
+
+\section{Future Research}
+
+
+
