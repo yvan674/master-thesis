@@ -12,6 +12,7 @@
 \usepackage[english]{babel}								% "Culturally determined typographical rules"
 \usepackage{datetime}									% To make the month automatic
 \usepackage{booktabs}									% Nicer tables
+\usepackage{multirow}                                   % Multirow in tables
 \usepackage[backend=biber]{biblatex}					% Bibliography
 \usepackage{subcaption}									% Subfigures. Why the package is called subcaption? 🤷🏻‍♂️
 \usepackage{dsfont}										% \mathbb{1} doesn't work
@@ -49,17 +50,15 @@
 %Sometimes line numbers are nice, uncomment the next line to enable:
 %\linenumbers
 
-%\input{chapters/abstract}
+\input{chapters/abstract}
 
-%\input{chapters/preface}
+\input{chapters/preface}
 
 \tableofcontents
 
-%\listoffigures
+\listoffigures
 
-%\listoftables
-
-%\lstlistoflistings
+\listoftables
 
 \mainmatter
 
@@ -67,7 +66,8 @@
 \input{chapters/literature_review}
 \input{chapters/background_knowledge}
 \input{chapters/methodology}
-
+\input{chapters/experiments}
+\input{chapters/discussion}
 
 
 %\input{chapters/conclusions}

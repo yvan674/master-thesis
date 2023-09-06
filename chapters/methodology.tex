@@ -13,11 +13,22 @@ This will first begin with a general overview of our method, then discuss each c
 
 \section{Widar 3.0}
 
+\begin{figure}
+	\centering
+	\includegraphics{figures/widar-positioning}
+	\caption{Typical positioning of the access points and subjects in Widar 3.0. The image is sourced from \cite{zheng2019zero}. Loc shows the different torso locations used and orient the different orientations the subject may be at.}
+	\label{fig:widar-positioning}
+\end{figure}
+
 The Widar 3.0 dataset \cite{zheng2019zero} contains gesture data collected over a series of months in 3 different rooms with 17 different subjects.
 6 gestures were performed by every subject.
 For each gesture performed, the gesture was performed in one of 8 locations with 5 orientations.
 Further details of the distribution of domain factors can be found in Appendix \ref{appendix:dataset}.
 Further details of how the data was gathered can be found in \cite{zheng2019zero}.
+
+Each recorded data sample is a time-series consisting of the CSI between a transmitting Wi-Fi access point (Tx) and a receiving Wi-Fi access point (Rx).
+Each Rx access point (AP) has two antennas, each of which are collecting separate time-series streams.
+The positional setup of the gesture collection spaces can be seen in Figure \ref{fig:widar-positioning}.
 
 The data itself is provided as a collection of both CSI data dumps, collected at 1000 Hz, as well as BVP tensors, collected with a temporal resolution of 10 Hz.
 Each CSI data dump contains samples of sets of complex values with variable length, the shortest having a length of around 100 samples and the longest with a length of around 3100 samples. 
@@ -25,20 +36,7 @@ As the majority of the data have a length of less than 2000 samples, we set the 
 We pad those of shorter length with 0s and we simply apply a cutoff on those datapoints which are longer.
 
 Due to our focus on looking at single domain factor leave out as our main research question, we have chosen the task of single-user leave out.
-To ensure that we are focusing only on this domain factor, our selection parameters for the training set and test set are seen in Table \ref{tab:sulo-params}.
-
-\begin{table}
-	\centering
-	\begin{tabular}{@{}lcc@{}}
-		\toprule
-		Selection Parameters & Training            & Test \\ \midrule
-		User                 & 3, 5, 6, 10, 11, 12 & 1    \\
-		Room Number          & \multicolumn{2}{c}{1}      \\
-		Gesture              & \multicolumn{2}{c}{all}    \\ \bottomrule
-	\end{tabular}
-	\caption{Selection parameters for samples in the training and testing set for single user leave out.}
-	\label{tab:sulo-params}
-\end{table}
+To ensure that we are focusing only on this domain factor, our selection parameters for the training set and test set are seen in Table \ref{tab:single-user-select}.
 
 \section{DARLInG}
 
@@ -199,6 +197,7 @@ We process these images in Python using the pyts package \cite{faouzi2020pyts}, 
 Regardless of the chosen transformation, the signal is transformed into a two-dimensional tensor which can be treated as an image.
 We also downsample this image to a size of $40 \times 40$ pixels for computational complexity purposes, which still provides a temporal resolution double that of the provided BVP data in Widar 3.0.
 A visualization of each of the signal-to-image transformations on randomly selected samples of the Widar 3.0 dataset can be seen in Figure \ref{fig:transform-samples}.
+As can be seen, each CSI sample is transformed into an amplitude as well as a phase image.
 We can then proceed with the encoding of this image into a latent space.
 
 \section{Signal encoding}\label{sec:methodology-signal-encoding}
@@ -221,6 +220,8 @@ The reparameterization trick is then used, adding a random variable $\mathcal{N}
 A visualization of the CNN-based VAE used can be seen in Figure \ref{fig:vae-diagram}.
 
 The latent representation $\boldsymbol{z}$ of this signal is then passed to both the reinforcement learning agent as its state observation as well as to the multi-task learning modules.
+
+In the case of CSI data, as the signal is provided as both an amplitude and phase image, we have two signal-encoding modules running in parallel; one for the amplitude image and one for the phase image, with no sharing of parameters.
 How the RL agent uses this state observation is described in Section \ref{sec:methodology-rl} while its use by the multi-task learning module is described in Section \ref{sec:methodology-multi-task-learning}.
 
 \section{Multi-task Learning}\label{sec:methodology-multi-task-learning}

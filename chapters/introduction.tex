@@ -126,9 +126,9 @@ We hypothesize that we can extend the RL component of \cite{ma2021location} to f
 Towards these goals, we specify our research questions as follows:
 
 \begin{enumerate}
-	\item To what extent can a reinforcement learning agent utilize the latent signal representation produced by the CNN to accurately produce a latent representation of the domain space, measured by performance metric difference in a domain factor leave-out cross validation setting between a classifier provided the domain space representation and one which has not?
-	\item To what extent would changing the latent representation of the domain space from a one-hot encoding to a probability measure affect the performance of the classifier, measured by the performance metric difference in a domain factor leave-out cross validation between both domain space representation types?
-	\item To what extent can signal-to-image transformation replace the state machine neural network presented in \cite{ma2021location}, measured by comparing the performance metric difference in a domain factor leave-out cross validation setting between the model presented in \cite{ma2021location} and our approach provided no self-label?
+	\item To what extent can a reinforcement learning agent utilize the latent signal representation produced by the VAE to accurately produce a latent representation of the domain space (the \textit{domain embedding}), measured by performance metric difference in a domain factor leave-out cross validation setting between a classifier provided the domain embedding and one which has not?
+	\item To what extent would changing the domain embedding from a one-hot encoding to a probability measure affect the performance of the classifier, measured by the performance metric difference in a domain factor leave-out cross validation between both domain space representation types?
+	\item To what extent does changing the signal-to-image transformation affect model performance, measured by comparing the performance metric difference in a domain factor leave-out cross validation setting between the different signal-to-image transformations?
 \end{enumerate}
 
 The rest of this thesis will present a literature review, background on required knowledge, the proposed methodology, experimental results, and discussions and conclusions of those results.
