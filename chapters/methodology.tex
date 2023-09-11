@@ -273,6 +273,21 @@ In \cite{ma2021location}, as discussed in Section \ref{sec:literature-csi-for-ge
 On the other hand, as discussed in Section \ref{sec:literature-domain-rl}, \cite{zhang2021adversarial} used RL for domain-independent feature selection.
 We therefore were motivated to investigate whether RL could also be used to perform the opposite: to extract relevant domain-specific features and produce a useful embedding of said features for gesture recognition.
 
+\subsection{Known Domain Encoding}
+We also used a ``Known'' domain encoding as our baseline.
+This is a 33-dimensional one-hot encoding of the known domain factors (i.e., twenty users, three room, five face orientations, and five torso locations).
+For example, in the case of user 2 in room 1 with face orientation 4 and torso location 3, the known domain embedding would be
+\begin{align*}
+	\boldsymbol{d}_r = [&0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 & \text{user encoding} \\
+	                    &1,0,0                                   & \text{room encoding} \\
+	                    &0,0,0,1,0                               & \text{orientation encoding} \\
+	                    &0,0,1,0,0]                              & \text{location encoding}
+\end{align*}
+
+This was used as a baseline to compare our RL agents against.
+The intuition behind this is that our initial hypothesis is providing domain labels can increase model performance.
+Therefore, the known domain factors, while incomplete, should provide \textit{some} baseline to which we can compare our model again.
+
 \subsection{Reward Function}\label{subsec:methodology-reward}
 
 As with any RL algorithm, one of the most important components is the reward function used.
@@ -349,6 +364,3 @@ We alternate training between the RL agent and the VAE, rather than training bot
 	}
 	\caption{Simplified DARLInG Training Algorithm}\label{algo:darling-training}
 \end{algorithm}
-
-
-
