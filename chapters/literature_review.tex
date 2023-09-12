@@ -19,14 +19,14 @@ The most important idea in this work is the elimination of the radio ``flash'' w
 Their work focused more on the radar technology implications and not on the use of consumer Wi-Fi APs for gesture detection.
 They did, though, show that using matched filters was enough to perform rudimentary gesture recognition, given coarse enough gestures.
 
-In the same year, a different group published a paper showing how to use signals in the 2.4 GHz range, i.e., compatible with Wi-Fi transceivers, for simple gesture detection using Doppler shift identification \cite{pu2013whole}.
+In the same year, a different group published a paper showing how to use signals in the 2.4 GHz range, i.e., compatible with Wi-Fi transceivers, for simple gesture detection using Doppler shift analysis \cite{pu2013whole}.
 This paper proposes the use of a narrowband pulse with a very narrow bandwidth of only a few Hertz and detecting the Doppler shift from the returned signal.
 Using this method, the researchers were able to identify 9 different gestures with a claimed 94\% accuracy.
 
 The same group as \cite{adib2013see} also published a separate paper in 2014 detailing the use of a custom-built Wi-Fi based device which could detect course body motions by leveraging the geometric position of its antennas and measuring values through a Time of Flight (ToF) approach \cite{adib20143d}.
 
 Finally, it is also important to note that IEEE has a task group 802.11bf assigned specifically to standardize Wi-Fi sensing technologies \cite{du2022overview}.
-This group is focused on standardizing the hardware requirements, specifically enabling CSI accessibility and specific measurement procedures which future devices can implement.
+This group is focused on standardizing the hardware requirements, specifically enabling CSI accessibility and specific measurement procedures, which future devices could implement.
 Their target is to standardize these requirements for future devices both in the sub-7 GHz range and in the 60 GHz range.
 They additionally provide suggestions for what methods can be then be used to interpret the data provided, including the use of Fast Fourier Transform (FFT) algorithms to calculate a Channel Impulse Response from CSI and a Doppler FFT, which may be directly used for gesture recognition.
 The standards for 802.11bf is set to be ratified and published by September 2024.
@@ -41,7 +41,7 @@ This work looks into the use of CSI and outlier detection to detect gestures, ac
 The 2019 work titled Person-in-WiFi from Wang et al. proposes the use of an array of three transmitter and three receiver antennas to directly predict body segmentation and pose estimation of persons located in between the aforementioned antennas \cite{wang2019person}.
 In this work, they used an RGB camera to provide ground truth annotations.
 The ground truth body segmentation masks were generated using Mask-RCNN while the Body-25 model of OpenPose was used for pose detection.
-This work, shows that body segmentation and pose estimation is possible with only CSI data, achieving an mAP of 0.38 for body segmentation and around 0.1 meter error for join estimation. 
+This work shows that body segmentation and pose estimation is possible with only CSI data, achieving an mAP of 0.38 for body segmentation and around 0.1 meter error for join estimation. 
 Qualitatively, the results are quite impressive and it is clear that at the very least, the model performs well given that its input data is one-dimensional.
 
 Using the same dataset, Geng, Huang, and De La Torre published DensePose in 2022 performs similarly, but instead produces UV coordinates of the subjects.
@@ -50,16 +50,16 @@ This work also provides some interesting preprocessing steps on the raw CSI data
 WiGAN, published in 2020, proposes the use of a Generative Adversarial Network (GAN) to augment training data using the generator as well as using the discriminator as a feature fusion and extraction module \cite{jiang2020wigan}.
 The output of the discriminator is then used fed into a Support Vector Machine (SVM) which classifies then gesture seen in the input data.
 The authors claim that by using the discriminator, which fuses together multiple layers of a CNN module through yet another convolution, their method is able to ``learn and recognize the importance of different depth features by itself''.
-On publicly available datasets, WiGAN indeed achieves better results than the competing methods at the time, achieving 98\% accuracy on Widar 3.0 with known subjects and $\approx$8--10\% lower performance on new domains.
+On publicly available datasets, WiGAN indeed achieves better results than the competing methods at the time, achieving 98\% accuracy on Widar 3.0 with in-domain samples and $\approx$8--15\% lower performance on new domains.
 
-The same group, in the same year, published DeepMV which proposes the use of multiple APs and audio sources, in the form of ultrasound signals, with a domain discriminator and embedding generator \cite{xue2020deepmv}.
-This work is based on the intuition that the fusion of sensor data from multiple APs and audio sources placed around the room, which intuitively should provide more data.
-The embedding generator produces a latent representation of the action which can then be used by a fully connected module to classify the action being performed while the domain discriminator uses the latent representation to predict the domain of the action.
+The same group, in the same year, published DeepMV which proposes the use of multiple APs and audio sensors, in the form of ultrasound signals, with a domain discriminator and embedding generator \cite{xue2020deepmv}.
+This work is based on the intuition that the fusion of sensor data from multiple APs and audio sensors placed around the room should provide more data.
+The embedding generator produces a latent representation of the action which is then used by a fully connected neural network to classify the action being performed while the domain discriminator uses the latent representation to predict the domain of the action.
 A minimax game is played between the embedding generator and domain discriminator to minimize the maximum accuracy of the domain discriminator while maximizing the minimum accuracy of the action classifier.
-On their self-collected dataset, they were able to achieve 83.7\% mean accuracy, outperforming all other benchmarked methods.
+On their self-collected dataset, they were able to achieve 83.7\% mean accuracy, outperforming all other benchmarked methods on this dataset.
 
 The 2021 paper by Zhuravchak et al. proposes the use of an LSTM as a classifier \cite{zhuravchak2022human}. 
-In this method approach, CSI data is provided as an input with a fixed length and the LSTM provides a single output representing the action detected within the input window.
+In this approach, CSI data is provided as an input with a fixed length and the LSTM provides a single output representing the action detected within the input window.
 Their method achieves 87.8\% accuracy on a self-collected dataset.
 
 Ma et al., published in 2021, proposes the use of a CNN and neural network state machine encoder and a LSTM trained using RL to eliminate the need of domain specific information \cite{ma2021location}.
@@ -81,7 +81,7 @@ On the SignFi dataset, they show that each of the above steps do indeed signific
 
 Three Wi-Fi CSI datasets for gesture recognition were considered for this thesis and they are each explained in this section.
 
-The Widar 3.0 dataset, forthwith referred to as the Widar dataset for brevity, presents a dataset with developed specifically for ``cross-domain learning solutions'' \cite{zheng2019zero}.
+The Widar 3.0 dataset, forthwith referred to as Widar for brevity, presents a dataset with developed specifically for ``cross-domain learning solutions'' \cite{zheng2019zero}.
 The solution provided in this dataset is two-fold: 1) the (relatively) high number of domains that the data was collected with, and 2) the proposal of Body-coordinate Velocity Profile (BVP) with is a theoretically domain-independent representation of the data.
 More details of BVP is discussed in Section \ref{sec:background-bvp}.
 Finally, this paper also provides a baseline model to compare against.
@@ -96,8 +96,8 @@ This dataset was collected specifically for pose estimation solutions and is not
 
 \section{Signal-to-Image Transformations}
 
-Different preprocessing methods have been investigated to transform raw tabular data into images for deep learning.
-Four state-of-the-art approaches are Gramian Angular Fields (GAF), Markov Transition Fields (MTF) \cite{wang2015imaging}, and Recurrent Plots (RP) \cite{eckmann1995recurrence}.
+Different preprocessing methods have been investigated to transform raw time-series signal data into images for deep learning.
+Three state-of-the-art approaches are Gramian Angular Fields (GAF), Markov Transition Fields (MTF) \cite{wang2015imaging}, and Recurrent Plots (RP) \cite{eckmann1995recurrence}.
 A search of the current body of literature did not yield any research into a direct comparison of these techniques on a common dataset.
 Instead, a previous unpublished work by the author of this thesis for the Seminar course at the TU/e has shown that these GAF and MTF performed amongst the best of the state-of-the-art signal-to-image transformations \cite{satyawan2023cnns}.
 A more thorough description of each of these methods are described in Section \ref{sec:background-signal-to-image}.
@@ -130,7 +130,7 @@ Tested against a baseline where sparsity and mixed precision training was not us
 
 The following section contains some selected works in domain shift mitigation, mainly those related directly with RL of self-supervised techniques.
 
-Zhang et al. in 2021 published research into using RL based feature selection for domain shift mitigation \cite{zhang2021adversarial}.
+In 2021, Zheng et al. published research into using RL based feature selection for domain shift mitigation \cite{zhang2021adversarial}.
 The proposed method would be able to select the most relevant features across two domains by employing Q-learning to learn policies for feature selection, utilizing the performance of a domain discriminator as its reward function.
 By doing so, they attempt to align the feature manifolds between both domains and produce domain invariant features in the vision field through the use of reinforcement learning.
 This also has led to our own hypothesis that reinforcement learning can be used for domain auto-labeling.
@@ -139,7 +139,7 @@ Benchmarked on publicly available datasets, this method achieves the best mean a
 Martini et al. published a technique called ``Domain-Adversarial Neural Networks'' in 2021 \cite{martini2021domain}.
 This technique uses a feature extractor, a domain classifier, and a label predictor.
 The feature extractor maps the input to a latent representation, the domain classifier predicts the domain given the latent representation, and the label predictor provides a class prediction given the extracted features.
-The loss function of the model balances the label predictor loss, using Cross Entropy Loss, and the domain classifier loss, also using Cross Entropy Loss, with the goal of providing a latent representation from the feature extractor which is domain-invariant, yet still discriminative such that the domain classifier is still capable of accurately classifying the domain.
-Additionally, the paper proposes the use of Maximum Mean Discrepancy (MMD) to measure the difference between two domains.
-The MMD measures the kernel-based difference between feature means of each domain.
-This work proposes the use of MMD with the goal of minimizing this distance while maintaining the distinctness of each domain, allowing for the domain classifier to still work.
+The loss function of the model balances the loss of the label predictor and the domain classifier, both using cross entropy Loss, with the goal of providing a latent representation from the feature extractor which is domain-invariant, yet still discriminative such that the domain classifier is still capable of accurately classifying the domain.
+Additionally, the paper proposes the use of Maximum Mean Discrepancy (MMD) to measure the distance between domains.
+The MMD measures the kernel-based distance between feature means of each domain.
+This work proposes balancing minimizing the MMD while maintaining the distinctness of each domain, measured by the performance of the domain classifier.
