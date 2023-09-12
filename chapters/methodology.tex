@@ -16,13 +16,13 @@ This will first begin with a general overview of our method, then discuss each c
 \begin{figure}
 	\centering
 	\includegraphics{figures/widar-positioning}
-	\caption{Typical positioning of the access points and subjects in Widar 3.0. The image is sourced from \cite{zheng2019zero}. Loc shows the different torso locations used and orient the different orientations the subject may be at.}
+	\caption{Typical positioning of the access points and subjects in Widar. The image is sourced from \cite{zheng2019zero}. Loc shows the different torso locations used and orient the different orientations the subject may be at.}
 	\label{fig:widar-positioning}
 \end{figure}
 
-The Widar 3.0 dataset \cite{zheng2019zero} contains gesture data collected over a series of months in 3 different rooms with 17 different subjects.
+Widar\cite{zheng2019zero} contains gesture data collected over a series of months in 3 different rooms with 17 different subjects.
 6 gestures were performed by every subject.
-For each gesture performed, the gesture was performed in one of 8 locations with 5 orientations.
+For each gesture performed, the gesture was performed in one of 5 locations with 5 orientations.
 Further details of the distribution of domain factors can be found in Appendix \ref{appendix:dataset}.
 Further details of how the data was gathered can be found in \cite{zheng2019zero}.
 
@@ -41,13 +41,13 @@ To ensure that we are focusing only on this domain factor, our selection paramet
 \section{DARLInG}
 
 In this thesis, we present our novel approach DARLInG (Domain Autolabeling through Reinforcement Learning for the Identification of Gestures).
-DARLInG is our proposed approach to domain-agnostic gesture identification using RL.
+DARLInG is our proposed approach to domain-independent gesture identification using RL.
 Our intuition comes from \cite{zhang2021adversarial} in which RL was used to identify features in the data which was invariant to domain shifts.
 Analogously, we hypothesize that RL can then be used to identify those features which are \textit{not} invariant to domain shifts and produce a \textit{domain embedding} from said features.
-We hypothesize that by providing our gesture discriminator with not only the original signal, encoded by a VAE-style encoder, but also this domain embedding, the gesture discriminator would be able to significantly increase its performance in gesture recognition throughout multiple domains.
+We hypothesize that by providing our gesture discriminator with not only the original signal, encoded by a CNN-based VAE encoder, but also this domain embedding, the gesture discriminator would be able to significantly increase its performance in gesture recognition throughout multiple domains.
 
 The general architecture of DARLInG can be seen in Figure \ref{fig:arch-diagram} and the code can be found publicly on GitHub\footnote{\href{https://github.com/yvan674/DARLInG}{https://github.com/yvan674/DARLInG}}.
-We first propose a signal preprocessing and signal-to-image transformation pipeline, described in Section \ref{sec:methodology-signal-preprocessing} and \ref{sec:methodology-signal-to-image}.
+We first propose a signal processing and signal-to-image transformation pipeline, described in Section \ref{sec:methodology-signal-preprocessing}.
 This transforms the input signal into an image that is then passed through a CNN encoder, as described in Section \ref{sec:methodology-signal-encoding}, encoding the signal into a latent space.
 This latent representation is then used in two different ways: As an input for the multi-task learning heads, described in Section \ref{sec:methodology-multi-task-learning}, and as the state observation for our RL agent, described in Section \ref{sec:methodology-rl}.
 
@@ -56,15 +56,17 @@ This latent representation is then used in two different ways: As an input for t
 	\includegraphics[width=0.78\textwidth]{figures/rl_paradigm}
 	\caption{The basic paradigm of Reinforcement Learning where an agent interacts with its environment through actions $a$ and receives a new state $s$ and reward $r$ in return.}\label{fig:rl-paradigm}
 \end{figure}
-Recall first that RL is typically modeled as a Markov decision process with an environment and observed state of that environment at time $t$, $s_t$. An agent then performs an action $a_t$ and is provided with a reward $r_t$ and a new observed state $s_{t+1}$.
+Recall first that RL is typically modeled as a Markov decision process with an environment and observed state $s_t$ of said environment at time $t$.
+An agent then performs an action $a_t$ and is provided with a reward $r_t$ and a new observed state $s_{t+1}$.
 A typical RL scenario is framed in this way and is visually represented by Figure \ref{fig:rl-paradigm}.
 
 To mitigate domain-shift, our RL agent is tasked with producing the best possible domain embedding of the domain $\boldsymbol{d}_r = a, \boldsymbol{d}_r \in [0, 1]^e$ as its action where $e$ is the dimensionality of the domain embedding.
 The domain embedding, or action, is generated by the RL agent given the signal latent representation $\boldsymbol{z} = s, \boldsymbol{z} \in [0, 1]^f$ as its state observation, where $f$ is the dimensionality of the latent representation.
 
-To provide the RL agent with a reward function, inspired by triplet loss, we use two different multi-task learning modules.
+To provide the RL agent with a reward function we use two different multi-task learning modules.
 The details of the reward function are described in Subsection \ref{subsec:methodology-reward}.
-One of these modules is provided $\boldsymbol{d}_{\emptyset}$, representing a vector of zeros when the $d$ is one-hot encoded or a value of $\frac{1}{f}$ when $\boldsymbol{d}_r$ is a probability measure, and the other $\boldsymbol{d}_{r}$.
+One of these modules is provided $\boldsymbol{d}_{\emptyset}$, representing a vector of zeros when $\boldsymbol{d}_r$ is one-hot encoded or a value of $\frac{1}{f}$ when $\boldsymbol{d}_r$ is a probability measure.
+The other module is provided with $\boldsymbol{d}_{r} = a$.
 
 \section{Signal Preprocessing}\label{sec:methodology-signal-preprocessing}
 
@@ -142,11 +144,12 @@ This module first cleans the CSI signal using traditional signal processing and 
 \begin{figure}
 	\centering
 	\includegraphics[width=0.8\textwidth]{figures/phase_unwrap}
-	\caption{A plot over time of the phase shift after unwrapping of all training data, colored by gesture, showing how there is no general trend of only increasing or decreasing phases.}\label{fig:phase-unwrap}
+	\caption{A plot over time of the phase shift after unwrapping of all training data, colored by gesture, showing how there is no general trend of only increasing or decreasing phases. A histogram shows the final phase unwrapped values. The histogram shows the final values are generally positive, but tend to not be at the extremes.}\label{fig:phase-unwrap}
 \end{figure}
 
 The CSI data is provided as a set of complex values sampled at 1000 Hz.
-We first decompose this into its radius and angle components on the complex plane or its amplitude and phase shifts, respectively.
+We first decompose this into its radius and angle components on the complex plane.
+These correspond to the amplitude and phase shift of the signal, respectively.
 We process this signal through two different pipelines, one for the amplitude component and one for the phase component, as the phase requires a few additional processing steps compared to the amplitude.
 
 The pipeline for amplitude consists of the following steps:
@@ -157,45 +160,48 @@ The pipeline for amplitude consists of the following steps:
 \end{enumerate}
 
 The low pass filter is used to eliminate noise inherent in CSI data from environmental factors.
-It has also been set to these values based on empirical experimentation which shows that no human movements during the performance of the 6 gestures which we test for has a frequency above 250 Hz.
+It has been set to these values based on empirical experimentation which shows that no human movements during the performance of the 6 gestures which we test for has a frequency above 250 Hz.
 
 The standard scalar is used since empirical evidence shows that neural networks work best when input values are close to the interval $[-1, 1]$ \cite{varun2023tuning}.
+The standard scalar we use is fitted on the training set of the split that is used during a given experiment.
 
 The effect of each step of the amplitude pipeline can be seen in Figure \ref{fig:amp-pipeline}.
 
 The pipeline for the phase consists of the following steps prepended to the amplitude pipeline:
 \begin{enumerate}
 	\item \textbf{Phase Unwrapping} which unwraps the phase and makes the signal continuous.
-	\item \textbf{Phase Filtering} step, which applies a uniform and median filter onto the phase shift signal, inspired by \cite{oerlemans2022effect}.
+	\item \textbf{Phase Filtering} step, which applies a uniform and median filter onto the phase shift signal.
 \end{enumerate}
 
+We use phase unwrapping to avoid sharp discontinuities in the phase value whenever a phase wraps around from $-\pi$ to $\pi$ or vice versa.
+This results in a continuous signal instead of disjointed segments of the signal.
+We use phase filtering as inspired by \cite{oerlemans2022effect} with the same parameters and for the same reasons.
 The effect of each step of the phase pipeline can be seen in Figure \ref{fig:phase-pipeline}.
 
 The signal can now be considered clean, or at least clean enough that we can continue with further steps.
 
 During the course of experimentation, we considered taking the derivative of the phase, to eliminate a generally monotonously increasing or decreasing signal, as can been seen in the example in \ref{fig:phase-pipeline} after phase unwrapping.
-Further investigation showed that this is actually not necessary as most signals do not monotonously increase or decrease.
+Further investigation showed that this is not necessary as most signals do not monotonously increase or decrease.
 A plot of the phase shifts after unwrapping of all signals can be seen in Figure \ref{fig:phase-unwrap}.
-The plot clearly shows that there is no general trend of phases increasing or decreasing infinitely, with many phase shifts staying around 0 after unwrapping.
+The plot clearly shows that there is no general trend of phases increasing or decreasing infinitely, with many phase shifts staying slightly positive after unwrapping but few signals trending towards the extreme ends of the distribution.
 
 \subsection{Signal-to-Image Transformation}\label{sec:methodology-signal-to-image}
 \begin{figure}
 	\centering
 	\includegraphics[width=\textwidth]{figures/transforms}
-	\caption{Samples of each gesture from the Widar 3.0 dataset being transformed using each of the three signal-to-image transformations. Each pair of columns is the transformation by a single signal-to-image transformations on the amplitude and phase signals, respectively.}
+	\caption{Samples of each gesture from Widar being transformed using each of the three signal-to-image transformations. Each pair of columns is the transformation by a single signal-to-image transformations on the amplitude and phase signals, respectively.}
 	\label{fig:transform-samples}
 \end{figure}
 
 %Four crazy signal-to-image transformation methods! You won't believe number three!\todo{If there are no objections, this will be in the final paper}
 
 The next stage in our method is transform the signal into an image, leveraging advances from computer vision.
-There are many works from the literature which show that there are certainly improvements that can be gained from performing image processing on temporal data.
-We will experiment with the following four methods for signal-to-image transformation: Gramian Angular Fields (GAF) \cite{wang2015imaging}, Markov Transition Fields (MTF) \cite{wang2015imaging}, and Recurrent Plots (RP) \cite{eckmann1995recurrence}.
+We will experiment with the following three methods for signal-to-image transformation: Gramian Angular Fields (GAF) \cite{wang2015imaging}, Markov Transition Fields (MTF) \cite{wang2015imaging}, and Recurrent Plots (RP) \cite{eckmann1995recurrence}.
 A more comprehensive description of each of these transformations can be found in Section \ref{sec:background-signal-to-image}.
 
-We process these images in Python using the pyts package \cite{faouzi2020pyts}, which conveniently contains ready-to-use implementations of all three of the aforementioned transformations.
+We process these images in Python using the pyts package \cite{faouzi2020pyts} which conveniently contains ready-to-use implementations of all three of the aforementioned transformations.
 Regardless of the chosen transformation, the signal is transformed into a two-dimensional tensor which can be treated as an image.
-We also downsample this image to a size of $40 \times 40$ pixels for computational complexity purposes, which still provides a temporal resolution double that of the provided BVP data in Widar 3.0.
+We also downsample this image to a size of $40 \times 40$ pixels for computational complexity purposes, which still provides a temporal resolution $4 \times$ that of the provided BVP data in Widar.
 A visualization of each of the signal-to-image transformations on randomly selected samples of the Widar 3.0 dataset can be seen in Figure \ref{fig:transform-samples}.
 As can be seen, each CSI sample is transformed into an amplitude as well as a phase image.
 We can then proceed with the encoding of this image into a latent space.
@@ -205,23 +211,23 @@ We can then proceed with the encoding of this image into a latent space.
 \begin{figure}
 	\centering
 	\includegraphics[width=\textwidth]{figures/vae-diagram}
-	\caption{The CNN-based VAE used in DARLInG. The number of ConvBlock elements is variable, depending on the experiment being performed. The reparameterization trick is the same trick described in \cite{kingma2013auto}.}\label{fig:vae-diagram}
+	\caption{The CNN-based VAE used in DARLInG. The number of ConvBlock elements is variable, depending on the experiment being performed. The reparameterization trick is described in \cite{kingma2013auto}.}\label{fig:vae-diagram}
 \end{figure}
 
 The encoding of the signal, now an image, into a latent space is performed using a Convolutional Neural Network (CNN)-based VAE.
 The CNN itself is structured as a standard, deep CNN, made up of multiple \verb|ConvBlock|s where each block is made up of a \verb|Conv2d| with dropout, a batch norm layer, and an activation layer.
-The number of input channels, filters, and kernel size of the \verb|Conv2d| layer and its dropout is set dynamically and differs by experiment.
-The activation layer also differs by experiments and is either ReLU, LeakyReLU, or SeLU.
+The number of input channels, filters, and kernel size of the 2-D convolutional layer and its dropout is set dynamically and differs by experiment.
+The activation function also differs by experiments and is either ReLU, LeakyReLU, or SeLU.
 The number of \verb|ConvBlock|s is set dynamically and differs by experiment.
 
 These blocks are then followed by two sets of two fully connected layers with a hidden layer size of 8192.
-One set of these fully connected layers serve to predict the $\mu$ of the other set to predict the $\log \sigma$ of the latent variables.
+One set of these fully connected layers serve to predict the $\mu$ and the other set to predict the $\log \sigma$ of the latent variables.
 The reparameterization trick is then used, adding a random variable $\mathcal{N}(0, 1)$ to produce the latent variables $\boldsymbol{z}$.
 A visualization of the CNN-based VAE used can be seen in Figure \ref{fig:vae-diagram}.
 
 The latent representation $\boldsymbol{z}$ of this signal is then passed to both the reinforcement learning agent as its state observation as well as to the multi-task learning modules.
 
-In the case of CSI data, as the signal is provided as both an amplitude and phase image, we have two signal-encoding modules running in parallel; one for the amplitude image and one for the phase image, with no sharing of parameters.
+In the case of CSI data, as the signal is provided as both an amplitude and phase image, we have two signal-encoding modules running in parallel; one for the amplitude image and one for the phase image with no sharing of parameters.
 How the RL agent uses this state observation is described in Section \ref{sec:methodology-rl} while its use by the multi-task learning module is described in Section \ref{sec:methodology-multi-task-learning}.
 
 \section{Multi-task Learning}\label{sec:methodology-multi-task-learning}
@@ -244,26 +250,24 @@ This is likely due to the encoder being guided towards producing a more robust o
 
 Therefore, as BVP generation is a theoretically domain-independent process, we should expect the latent representation to contain both features which are completely domain independent as well as features which are not.
 We do not, however, want to enforce domain-independence directly on the latent representation, as this may result in worse performance \cite{van2022insights}.
-Further, \cite{martini2021domain} supports giving the latent representation domain-discriminatory powers.
 
 As seen in Figure \ref{fig:arch-diagram}, we utilize two multi-task learning modules. The module receiving $\boldsymbol{d}_\emptyset$ is termed the \textit{null head} while the module receiving $\boldsymbol{d}_r$ is termed the \textit{embed head}. 
 The motivation behind the use of two heads is such that we can measure the RL agent's performance in an unsupervised manner by comparing the performance of the null head to the embed head.
 Intuitively, we should expect the embed head to perform better if the embedding $\boldsymbol{d}_r$ provided by the RL agent is able to provide some useful information, likely with respect to the domain, as opposed to the null head, which receives no useful information.
-This comparison of the performance of the two embed heads is inspired by triplet loss.
 
 For the loss function, we use cross entropy loss on the gesture classifier and mean squared error loss on the BVP generation.
 
 \section{Reinforcement Learning Agent}\label{sec:methodology-rl}
 
-To mitigate domain shift, we implement a novel method for unsupervised domain representations through reinforcement learning.
-Recall the common terminology used in RL, the agent, the action $a$, the state observation $s$, and the reward $r$; and the learning paradigms discussed in Section \ref{sec:background-rl}.
+To mitigate domain shift, we implement a novel method for unsupervised domain autolabeling through reinforcement learning.
+Recall the common terminology used in RL, the agent, the action $a$, the state observation $s$, the reward $r$, and the learning paradigms discussed in Section \ref{sec:background-rl}.
 For our agent, we choose to use the output of the encoder $\boldsymbol{z}$ as its state observation $s$.
 The agent then performs an action $a$ which is what we refer to as the domain embedding $\boldsymbol{d}_r$.
 This domain embedding is either continuous, in the case where the $\boldsymbol{d}_r$ is understood as a probability measure, or discrete, in the case where the $\boldsymbol{d}_r$ is understood as a one-hot encoding of domain factors.
 The produced $\boldsymbol{d}_r$ is then concatenated to one copy of $\boldsymbol{z}$ and fed to the embed head, while the other head receives a copy of $\boldsymbol{z}$ concatenated with $\boldsymbol{d}_\emptyset$.
 The reward $r$ is produced as a function of the outputs of both heads, and will be discussed further in Subsection \ref{subsec:methodology-reward}.
 
-In this work, we will be looking at using both an on-policy and off-policy algorithm, PPO and DDPG, respectively.
+In this work, we will be looking at using both PPO and DDPG, on-policy and off-policy algorithms, respectively.
 Details of PPO can be found in Subsection \ref{subsec:background-ppo} while the details of DDPG can be found in Subsection \ref{subsec:background-ddpg}.
 We use the ready-to-use implementation from Stable Baselines 3 \cite{raffin2021stable}, which also requires interpreting the model itself as a Gymnasium environment.
 Gymnasium is an open-source RL framework previously mainted by OpenAI, but now actively maintained by the Farama Foundation \cite{towers2023gymnasium}.
@@ -274,7 +278,7 @@ On the other hand, as discussed in Section \ref{sec:literature-domain-rl}, \cite
 We therefore were motivated to investigate whether RL could also be used to perform the opposite: to extract relevant domain-specific features and produce a useful embedding of said features for gesture recognition.
 
 \subsection{Known Domain Encoding}
-We also used a ``Known'' domain encoding as our baseline.
+We also used a ``known'' domain encoding as our baseline.
 This is a 33-dimensional one-hot encoding of the known domain factors (i.e., twenty users, three room, five face orientations, and five torso locations).
 For example, in the case of user 2 in room 1 with face orientation 4 and torso location 3, the known domain embedding would be
 \begin{align*}
@@ -285,8 +289,9 @@ For example, in the case of user 2 in room 1 with face orientation 4 and torso l
 \end{align*}
 
 This was used as a baseline to compare our RL agents against.
-The intuition behind this is that our initial hypothesis is providing domain labels can increase model performance.
+The intuition behind this is that our initial hypothesis is essentially ``providing domain labels can increase model performance''.
 Therefore, the known domain factors, while incomplete, should provide \textit{some} baseline to which we can compare our model again.
+We do not need a specific baseline of a model with no domain labels since this is already incorporated into our algorithm in the form of the null head.
 
 \subsection{Reward Function}\label{subsec:methodology-reward}
 
@@ -294,23 +299,23 @@ As with any RL algorithm, one of the most important components is the reward fun
 We experiment with two different reward functions: One we call the \textit{contrastive reward} $R_{CON}$ and one we call \textit{distance-maximization contrastive reward} $R_{DMC}$.
 
 \paragraph{Contrastive reward}
-Let $\phi$ denote some metric subject to minimization to measure the gesture classification performance of a multi-task learning module given the gesture classification prediction $\hat{y_{c}}$.
+Let $\varrho$ denote some metric subject to minimization to measure the gesture classification performance of a multi-task learning module given the gesture classification prediction $\hat{y_{c}}$.
 The contrastive reward function $R_{CON}$ is then 
 \begin{equation}
-	R_{CON}(\hat{y}_{c,r}, \hat{y}_{c,\emptyset}, y_c, \gamma) = \gamma \cdot \left(\phi\left(\hat{y}_{c,\emptyset} - y_c\right(\phi\left(\hat{y}_{c,r}, y_c\right))\right)
+	R_{CON}(\hat{y}_{c,r}, \hat{y}_{c,\emptyset}, y_c, \gamma) = \gamma \cdot \left(\varrho\left(\hat{y}_{c,\emptyset} - y_c\right(\phi\left(\hat{y}_{c,r}, y_c\right))\right)
 \end{equation}
 where $y_c$ is the ground truth gesture classification, $\hat{y}_{c,r} $ the predicted gesture from the embed head, $\hat{y}_{c,\emptyset}$ the predicted gesture from the null head, and $\gamma$ a multiplier factor chosen during hyperparameter tuning.
-In practice, we use cross entropy loss as our performance metric $\phi$.
+In practice, we use cross entropy loss as our performance metric $\varrho$.
 As such, our reward function $R_{CON}$ calculates the gesture recognition performance difference between the embed and null heads.
 
 Intuitively, we use this as our metric as the reward is based on the performance difference between the two heads.
 As the only difference in inputs between the two heads is that one receives $\boldsymbol{d}_r$ while the other receives $\boldsymbol{d}_\emptyset$, we should expect the difference in performance to come solely out of a difference in how powerful the domain embedding provided by the RL agent is in describing the domain factors influencing the CSI signal.
 Thus, maximizing this difference implies better total model performance.
-Additionally, we do not use an absolute value, as we want to penalize the model if the domain embedding results in the embed head performing worse than the null head.
+We do not use an absolute value, as we want to penalize the model if the domain embedding results in the embed head performing worse than the null head.
 
 This reward can be thought of as being similar to testing the null hypothesis, where $H_0$ is provided by the null head and $H_1$ is provided by the embed head.
 Our hypothesis, that the domain embedding will provide better results, is measured by the performance difference between then null and embed head, by proxy.
-If the RL agent provides a useful domain embedding, then the reward will approach $\gamma \cdot \phi\left(\hat{y}_{c,\emptyset}\right)$
+If the RL agent provides a useful domain embedding, then the reward will approach $\gamma \cdot \varrho\left(\hat{y}_{c,\emptyset}\right)$.
 
 \paragraph{Distance-Maximization Contrastive Reward}
 Empirical results show that the contrastive reward was not able to produce good performance.
@@ -323,7 +328,7 @@ The idea here is to provide stronger signals for the multi-task heads.
 We do this by first calculating the pairwise difference between each of the dimensions.
 We then apply a threshold to the difference, where any value below $\alpha$ is zeroed out, similarly to the procedure used in Lasso regression.
 Finally, we sum together all differences and divide by the number of non-zero values and add the contrastive loss.
-Formally, this can be described as
+Formally, this is given by
 \begin{align}
 	R_{DCM} (\hat{y}_{c,r}, \hat{y}_{c,\emptyset}, y_c, \boldsymbol{d}_r, \gamma) &= \gamma \cdot
 		\frac{\sum_{i \leq e} \sum_{j \leq e, j > i} \left(|d_{r,i} - d_{r,j}|\right) \cdot \mathds{1}_{>\alpha}\left(|d_{r,i} - d_{r,j}|\right)}
@@ -335,7 +340,7 @@ Formally, this can be described as
 	\end{cases},
 \end{align}
 $e$ the dimensionality of the domain embedding $\boldsymbol{d}_r$, $\mathds{1}_{A}(x)$ the characteristic indicator function, and $\alpha$ a hyperparameter to tune.
-$d_{r,i}$ can be understood as the magnitude of the $i$-th dimension of the domain embedding
+$d_{r,i}$ can be understood as the magnitude of the $i$-th dimension of the domain embedding.
 In practice, we set $\alpha = 0.1$.
 
 \section{Model Training}\label{sec:methodology-training}
