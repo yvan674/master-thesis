@@ -1,12 +1,12 @@
 \chapter{Background Knowledge}\label{chapter:background-knowledge}
 
 In this chapter, we will explore some of the background knowledge required to understand the methodology chosen and experiments undertaken throughout this thesis.
-We will first explore Variable Autoencoders before delving into some background about Reinforcement Learning and a discussion of Wi-Fi Channel State Information (CSI) and Body-coordinate Velocity Profiles (BVP).
+We will first explore Variable Autoencoders (VAEs) before delving into some background about Reinforcement Learning and a discussion of Wi-Fi Channel State Information (CSI) and Body-coordinate Velocity Profiles (BVP).
 Finally, we will discuss the three signal-to-image transformations that are explored in this work.
 
 \section{Variational Autoencoders}
 
-Variational autoencoders (VAEs) are a type of generative model which combines elements of both autoencoders and probabilistic modeling and are suited for unsupervised learning and representation learning and was first introduced by Kingma and Weling in \cite{kingma2013auto}.
+VAEs, a type of generative model which combines elements of both autoencoders and probabilistic modeling, are suited for unsupervised representation learning and was first introduced by Kingma and Weling in \cite{kingma2013auto}.
 Standard autoencoders are a network architecture in which data is encoded into a lower-dimensional latent space by an encoder.
 A decoder then reconstructs the original input from the latent representation.
 VAEs introduce probabilistic modeling to autoencoders by using a probability distribution over the latent space instead of using the latent space directly.
@@ -71,7 +71,7 @@ One example of off-policy RL is Deep Deterministic Policy Gradient (DDPG).
 \subsection{Proximal Policy Optimization}\label{subsec:background-ppo}
 
 PPO is a model-free on-policy RL algorithm proposed in Schulman et al. \cite{schulman2017proximal}.
-It is a further development based on Trust Region Policy Optimization (TRPO) \cite{schulman2017trust} and works by iteratively sampling data through interactions with the environment and optimizing a ``surrogate'' objective function using stochastic gradient ascent. The paper explores two approaches to this ``surrogate'' function, one using a penalty on KL divergence and one using a clipped objective function.
+It is a further development based on Trust Region Policy Optimization \cite{schulman2017trust} and works by iteratively sampling data through interactions with the environment and optimizing a ``surrogate'' objective function using stochastic gradient ascent. The paper explores two approaches to this ``surrogate'' function, one using a penalty on KL divergence and one using a clipped objective function.
 
 In the KL divergence approach, for each update of a given policy $\pi_\theta$, the KL-penalized objective $L^{KLPEN}$ is optimized with
 
@@ -83,7 +83,7 @@ With every policy update, we also update $\beta$ by first computing $d = \hat{\m
 If $d < d_{targ} / 1.5$, then we half $\beta$.
 If $d > d_{targ} \times 1.5$, then we double $\beta$. $\beta$ is a hyperparemter that can be chosen, but is ``not important in practice because the algorithm quickly adjusts it'' \cite{schulman2017proximal}.
 
-In the clipped surrogate objective approach, for each update of the policy, the clipped surrogate objective $L^{CLIP}$ for a given policy $\pi_\theta$ is updated, where
+In the clipped surrogate objective approach, for each update of the policy, the clipped surrogate objective $L^{CLIP}$ for a given policy $\pi_\theta$ is updated with
 
 \begin{align}
 	L^{CLIP}(\theta) &= \min \left[ 
@@ -119,11 +119,11 @@ The algorithm itself is relatively simple and is best understood by directly rea
 \subsection{Deep Q-Networks}
 
 Before we delve into DDPG, we will firsts look at DQNs, which DDPG builds off of and extends to continuous action spaces.
-DQNs is a model-free off-policy RL alrogithm and is an extension of Q-Learning which replaces the crafted Q-tables with neural networks \cite{watkins1989learning,mnih2015human}.
+DQNs are a model-free off-policy RL alrogithm and are an extension of Q-Learning, replacing the explicit Q-tables with neural networks \cite{watkins1989learning,mnih2015human}.
 
-The concept behind DQNs is to use a deep neural network to approximate the optimal action-value function
+The concept behind DQNs is to use a deep neural network to approximate the optimal action-value $Q (s, a)$ function given by
 \begin{equation}
-	Q^* (s, a) = \underset{\pi}{\max} \mathbb{E}\left[r_t + \gamma r_{t+1} + \gamma^2 r_{t+2} + \ldots | s_t=s, a_t=a, \pi\right]
+	Q^* (s, a) = \underset{\pi}{\max}\left[ \mathbb{E}\left[r_t + \gamma r_{t+1} + \gamma^2 r_{t+2} + \ldots | s_t=s, a_t=a, \pi\right]\right]
 \end{equation}
 where $r_t$ is the reward at time $t$, $\gamma$ a hyperparameter, $\pi=P(a|s)$ the policy, and $s, a$ the observation and action, respectively.
 Intuitively, $Q^*$ then is the maximum sum of rewards discounted by $\gamma$ after making a given observation and taking a given action.
@@ -139,8 +139,8 @@ At each iteration $i$ of the learning process, the loss function which is optimi
 		r + \gamma \underset{a'}{\max}Q(s', a'; \theta_i^-) - Q(s,a; \theta_i)
 	\right)^2\right]
 \end{equation}
-where $\theta_i$ are the parameters of the Q-network at iteration $i$ and $\theta_i^-$ are the target network parameters.
-$\theta_i^-$ are only updated with the Q-network parameters $\theta_i$ every $C$ steps and are otherwise kept fixed.
+where $\theta_i$ are the parameters of the Q-network at iteration $i$ and $\theta_i^-$ is the target network parameters.
+$\theta_i^-$ is only updated with the Q-network parameters $\theta_i$ every $C$ steps and is otherwise kept fixed.
 
 
 \subsection{Deep Deterministic Policy Gradient}\label{subsec:background-ddpg}
@@ -177,15 +177,15 @@ The algorithm itself is best described in the pseudocode presented in Algorithm 
 			Set $y_i$ according to Equation \ref{eq:ddpg-y}\;
 			Update critic by minimizing the loss according to Equation \ref{eq:ddpg-lq}\;
 			Update the actor policy using the sampled policy gradient
-			\begin{align}
+			\begin{align*}
 				\text{let }a_i &= \mu_{\theta_{\mu}}(s_i)\\
 				\nabla_{\theta_{\mu}} J &\approx \frac{1}{N} \sum_i \nabla_{a_i} Q_{\theta_{Q}}(s_i, a_i) \nabla_{\theta_{\mu}}a
-			\end{align}\;
+			\end{align*}\;
 			Update the target networks:
-			\begin{align}
+			\begin{align*}
 				\theta_{Q'} &\leftarrow \tau \theta_{Q} + (1 - \tau) \theta_{Q'}\\
 				\theta_{\mu'} &\leftarrow \tau \theta_{\mu} + (1-\tau) \theta_{\mu'}
-			\end{align}\;
+			\end{align*}\;
 		}
 	}
 	\caption{Deep Deterministic Policy Gradient (DDPG) Algorithm}\label{algo:ddpg}
@@ -194,9 +194,9 @@ The algorithm itself is best described in the pseudocode presented in Algorithm 
 \section{Channel State Information}
 
 In the context of Wi-Fi, channel state information (CSI) refers to the current conditions and characteristics of a given wireless communication channel.
-The current conditions and characteristics are typicially given as a set of complex values $z = a + bi = re^{i \varphi}$ where, the radius $r$ of the value is interpreted as the amplitude shift of the signal and the angle $\varphi$ the phase shift of the signal.
+The current conditions and characteristics are typicially given as a set of complex values $z = re^{i \varphi}$ where, the radius $r$ of the value is interpreted as the amplitude shift of the signal and the angle $\varphi$ the phase shift of the signal.
 
-This CSI contains data about how the wireless signal has traversed the environment, including reflection, diffraction, and scattering as a result of the path the signal has taken.
+This CSI contains data about how the wireless signal has traversed the environment including reflection, diffraction, and scattering as a result of the path the signal has taken.
 Additionally, information of the multiple paths that the signal has taken, known as its multipath characteristics, is also contained within the signal.
 Tracking the real-time (or in our case captured temporal) changes in the signal allows us to also capture data about the dynamic behavior of objects and obstacles in the environment the signal has traversed. By taking advantage of this information, we are able to characterize the movement, and by extension gestural data, of subjects which are affecting the signal.
 
@@ -231,7 +231,7 @@ Tracking the real-time (or in our case captured temporal) changes in the signal 
 	\label{fig:bvp-example}
 \end{figure}
 
-The CSI information, while useful, is also very heavily subjected to various domain factors including, but not limited to, the body composition of the subject, the various objects and their positioning in a room, the direction the subject is facing and the intensity of solar radiation on a given day.
+The CSI information, while useful, is also very heavily subjected to various domain factors including, but not limited to, the body composition of the subject, the various objects and their positioning in a room, the direction the subject is facing, the intensity of solar radiation on a given day, and whether Venus is ascending and in Taurus\footnote{The last two were meant as a joke, but is meant to illustrate how difficult it can be to fully characterize all domain factors which may affect the CSI information and how seemingly small things may have alter the CSI signal entirely}.
 To remedy this, Zheng et al. \cite{zheng2019zero} proposes the use of the Body-coordinate Velocity Profile (BVP), a representation of the CSI which is theoretically independent of domain factors \cite{zheng2019zero}.
 A visual representation of BVP can be seen in Figure \ref{fig:bvp-example}.
 
@@ -248,7 +248,7 @@ This BVP is thus representative of dynamic effects brought by movement of the su
 
 \section{Signal-to-Image Transformations}\label{sec:background-signal-to-image}
 
-In this section, we will look into the mathematical formulation of GAFs, MTFs, and RPs.
+In this section, we will look into the mathematical formulation of GAFs, MTFs, and RPs and provide a brief overview of how each of these methods transform a time-series data signal into a tensor which can be interpreted as an image.
 
 \subsection{Gramian Angular Fields}
 
@@ -321,7 +321,7 @@ Every value in this matrix is defined as the pairwise distance between trajector
 \begin{equation}
 	R_{i,j} = \Theta\left(\epsilon - ||\vec{x}_i - \vec{x}_j|| \right),~\forall i,j \in \{1, \ldots, n-(m-1)\tau\}
 \end{equation}
-where $\epsilon$ is a threshold and $\Theta$ is the Heaviside function
+where $\epsilon$ is a threshold and $\Theta$ is the Heaviside function given by
 \begin{equation}
 	\Theta(x) := \begin{cases}
 		1, & x \geq 0\\
