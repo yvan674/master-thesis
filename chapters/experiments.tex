@@ -49,9 +49,9 @@ We perform two preliminary experiments: running the VAE component only on a sing
 	\centering
 	\begin{tabular}{@{}lrrr@{}}
 		\toprule
-		Input modality     & Accuracy & Precision & F1-Score        \\ \midrule
-		BVP                & 0.9222   & 0.9091    & \textbf{0.9655} \\
-		CSI                & 0.9023   & 0.9091    & \textbf{0.9120} \\ \bottomrule
+		Input modality     & Accuracy  & Precision & F1-Score        \\ \midrule
+		BVP                & 92.22\%   & 90.91\%   & \textbf{0.9655} \\
+		CSI                & 90.23\%   & 90.91\%   & \textbf{0.9120} \\ \bottomrule
 	\end{tabular}
 	\caption{DARLInG's VAE component's performance on gesture prediction on a single-domain split of the Widar 3.0 dataset.}
 	\label{tab:single-domain-performance}
@@ -109,22 +109,22 @@ The results of the hyperparameter tuning can be seen in Table \ref{tab:hpoptim-r
 	\begin{tabular}{@{}lllrrrrrr@{}}
 		\toprule
 		\multicolumn{1}{c}{} & \multicolumn{1}{c}{} & \multicolumn{1}{c}{} & \multicolumn{2}{c}{Accuracy} & \multicolumn{2}{c}{Precision} & \multicolumn{2}{c}{F1-Score} \\
-		Transform            & RL Agent             & Encoding             & Null head    & Embed head    & Null head     & Embed head    & Null head    & Embed head    \\ \midrule
-		GAF                  & -                    & Known                & 0.410        & 0.427         & 0.446         & 0.446         & 0.402        & \textbf{0.439}         \\
-		GAF                  & PPO                  & PM                   & 0.339        & 0.357         & 0.339         & 0.357         & 0.339        & \textbf{0.357}         \\
-		GAF                  & PPO                  & One-hot              & 0.366        & 0.384         & 0.366         & 0.384         & 0.339        & \textbf{0.354}         \\
-		GAF                  & DDPG                 & PM                   & 0.371        & 0.367         & 0.384         & 0.384         & 0.364        & \textbf{0.378}         \\
-		GAF                  & DDPG                 & One-hot              & 0.429        & 0.438         & 0.420         & 0.402         & 0.429        & \textbf{0.438}         \\
-		MTF                  & -                    & Known                & 0.374        & 0.365         & 0.304         & 0.295         & 0.304        & \textbf{0.295}         \\
-		MTF                  & PPO                  & PM                   & 0.286        & 0.321         & 0.286         & 0.321         & 0.369        & \textbf{0.384}         \\
-		MTF                  & PPO                  & One-hot              & 0.464        & 0.446         & 0.464         & 0.446         & 0.384        & \textbf{0.393}         \\
-		MTF                  & DDPG                 & PM                   & 0.378        & 0.391         & 0.402         & 0.420         & 0.371        & \textbf{0.395}         \\
-		MTF                  & DDPG                 & One-hot              & 0.420        & 0.491         & 0.420         & 0.491         & 0.376        & \textbf{0.438}         \\
-		RP                   & -                    & Known                & 0.375        & 0.384         & 0.375         & 0.384         & 0.375        & \textbf{0.384}         \\
-		RP                   & PPO                  & PM                   & 0.325        & 0.331         & 0.339         & 0.348         & 0.328        & \textbf{0.326}         \\
-		RP                   & PPO                  & One-hot              & 0.330        & 0.332         & 0.304         & 0.348         & 0.331        & \textbf{0.332}         \\
-		RP                   & DDPG                 & PM                   & 0.411        & 0.429         & 0.411         & 0.429         & 0.379        & \textbf{0.419}         \\
-		RP                   & DDPG                 & One-hot              & 0.392        & 0.397         & 0.375         & 0.384         & 0.389        & \textbf{0.404}         \\ \bottomrule
+		Transform & RL Agent & Encoding & Null head & Embed head & Null head & Embed head & Null head & Embed head     \\ \midrule
+		GAF       & Known    & -        & 41.0\%    & 42.7\%     & 44.6\%    & 44.6\%     & 0.402     & \textbf{0.439} \\
+		GAF       & PPO      & PM       & 33.9\%    & 35.7\%     & 33.9\%    & 35.7\%     & 0.339     & \textbf{0.357} \\
+		GAF       & PPO      & One-hot  & 36.6\%    & 38.4\%     & 36.6\%    & 38.4\%     & 0.339     & \textbf{0.354} \\
+		GAF       & DDPG     & PM       & 37.1\%    & 36.7\%     & 38.4\%    & 38.4\%     & 0.364     & \textbf{0.378} \\
+		GAF       & DDPG     & One-hot  & 42.9\%    & 43.8\%     & 42.0\%    & 40.2\%     & 0.429     & \textbf{0.438} \\
+		MTF       & Known    & -        & 37.4\%    & 36.5\%     & 30.4\%    & 29.5\%     & 0.304     & \textbf{0.295} \\
+		MTF       & PPO      & PM       & 28.6\%    & 32.1\%     & 28.6\%    & 32.1\%     & 0.369     & \textbf{0.384} \\
+		MTF       & PPO      & One-hot  & 46.4\%    & 44.6\%     & 46.4\%    & 44.6\%     & 0.384     & \textbf{0.393} \\
+		MTF       & DDPG     & PM       & 37.8\%    & 39.1\%     & 40.2\%    & 42.0\%     & 0.371     & \textbf{0.395} \\
+		MTF       & DDPG     & One-hot  & 42.0\%    & 49.1\%     & 42.0\%    & 49.1\%     & 0.376     & \textbf{0.438} \\
+		RP        & Known    & -        & 37.5\%    & 38.4\%     & 37.5\%    & 38.4\%     & 0.375     & \textbf{0.384} \\
+		RP        & PPO      & PM       & 32.5\%    & 33.1\%     & 33.9\%    & 34.8\%     & 0.328     & \textbf{0.326} \\
+		RP        & PPO      & One-hot  & 33.0\%    & 33.2\%     & 30.4\%    & 34.8\%     & 0.331     & \textbf{0.332} \\
+		RP        & DDPG     & PM       & 41.1\%    & 42.9\%     & 41.1\%    & 42.9\%     & 0.379     & \textbf{0.419} \\
+		RP        & DDPG     & One-hot  & 39.2\%    & 39.7\%     & 37.5\%    & 38.4\%     & 0.389     & \textbf{0.404} \\ \bottomrule
 	\end{tabular}
 	}
 	\caption{Final experimental results of the performance of DARLInG by type of RL agent, domain embedding encoding, and signal-to-image transformation. Each pair of columns represents the results of the null head and the results of the embed head in each of the metrics accuracy, precision, and F1-score. The final F1-Score of the evaluation is emphasized in bold type.}
@@ -214,6 +214,6 @@ The number of agent iterations were chosen as the closest full dataset iteration
 We double $\zeta$ to 30 as we also double the total number of epochs during training.
 This is twice the training length of the VAE and 100$\times$ the training length for the agent relative to the other training runs.
 
-We observe an increase in performance, with around a 12 percentage point increase in F1-score and the performance plateauing around epoch 75.
+We observe an increase in performance, with an increase in F1-score of 0.12 and the performance plateauing around epoch 75.
 Although this is a welcome increase in performance, this is still below the baselines in \cite{zheng2019zero} and any of those discussed in Chapter \ref{chapter:literature-review}.
-It does, however, rule out increasing training duration as a way to increase model performance.
+The performance plateauing after epoch 75 does suggest that increasing training duration any further will most likely not increase model performance.
