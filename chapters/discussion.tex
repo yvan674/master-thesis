@@ -27,9 +27,15 @@ In this section, we answer each of the research questions we posited in Section 
 
 \paragraph{Research Question 1}
 Our first question asks how well DARLInG's embed heads perform compared to its null heads.
-The results from Section \ref{sec:experiments-setup-results} show that using an RL agent indeed has the potential to increase out-of-domain performance by up to 6.2 percentage points in the extended run.
-Using MTF as the transform, DDPG as the RL agent, and one-hot encoding as the domain embedding encoding provides our best results, but its low performance with the two other transforms suggest that this may not always be the case.
-As such, we can conclude that while not very satisfying, our results suggest that using RL to provide unsupervised domain labels \textit{may} provide better out-of-domain performance on Widar 3.0.
+The results from Table \ref{tab:final-results} indicate that we were able to achieve up to 7.1 percentage points of improvement on accuracy and an improvement on the F1-score of 0.062 when comparing the null head and the embed head on out-of-domain results.
+This was found when using MTF as the transform, DDPG as the RL agent, and one-hot encoding as the domain embedding encoding.
+The results when run with other configurations indicate that the magnitude of the performance increase may not be as large, although it is generally positive.
+
+The only configuration where there was a performance decrease was with PPO using the RP transform.
+With this configuration, the $\delta$ F1-score was -0.002 for the PM encoding and +0.002 for the one-hot encoding.
+As such, we conclude that this was a negligible difference and should therefore be interpreted as DARLInG not having any effect on model performance.
+
+We therefore conclude that our results suggest using DARLInG to provide unsupervised domain labels provide similar or better out-of-domain performance on Widar.
 
 \paragraph{Research Question 2}
 Our second question asks how changing the domain embedding encoding affects performance.
