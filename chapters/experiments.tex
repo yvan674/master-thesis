@@ -76,21 +76,21 @@ Our results here show that DARLInG is in fact capable of performing gesture clas
 		\multicolumn{4}{c}{RL Embedding Agent}                                                                              \\ \midrule
 		Start Epoch                    & $[0, 50]$                              & Int Uniform        & $15$                 \\ \midrule
 		\multicolumn{4}{c}{Encoder}                                                                                         \\ \midrule
-		Activation Function            & \{Leaky ReLU, SeLU, ReLU\}             & Uniform            & Leaky ReLU           \\
+		Activation Function            & \{Leaky ReLU, SeLU, ReLU\}             & Categorical        & Leaky ReLU           \\
 		Dropout                        & $[0, 0.9]$                             & Uniform            & $0.18$               \\
 		Initial Kernel Size            & $[3, 12]$                              & Int Uniform        & $7$                  \\
 		Latent Variables               & $[10, 100]$                            & Int Uniform        & $60$                 \\
-		Num Conv Blocks                & $[1, 10]$                              & Int Uniform        & $3$                  \\ \midrule
+		\# Conv Blocks                 & $[1, 10]$                              & Int Uniform        & $3$                  \\ \midrule
 		\multicolumn{4}{c}{Multi-task Module}                                                                               \\ \midrule
-		Decoder Activation Function    & \{Leaky ReLU, SeLU, ReLU\}             & Uniform            & Leaky ReLU           \\
+		Decoder Activation Function    & \{Leaky ReLU, SeLU, ReLU\}             & Categorical        & Leaky ReLU           \\
 		Decoder Dropout                & $[0, 0.9]$                             & Uniform            & $0.26$               \\
-		Classifier Activation Function & \{Leaky ReLU, SeLU, ReLU\}             & Uniform            & SeLU                 \\
+		Classifier Activation Function & \{Leaky ReLU, SeLU, ReLU\}             & Categorical        & SeLU                 \\
 		Classifier Dropout             & $[0, 0.9]$                             & Uniform            & $0.28$               \\
-		Classifier num layeres         & $[1, 10]$                              & Uniform            & $4$                  \\ \midrule
+		Classifier \# Layers         & $[1, 10]$                                & Uniform            & $4$                  \\ \midrule
 		\multicolumn{4}{c}{Optimizer}                                                                                       \\ \midrule
-		$\alpha$                       & $[1 \times 10^{-10}, 1]$               & log uniform        & $8 \times 10^{-5}$   \\
-		Learning rate                  & $[1 \times 10^{-6}, 1 \times 10^{-2}]$ & uniform            & $2.2 \times 10^{-4}$ \\
-		Optimizer                      & \{SGD, Adam\}                          & Uniform            & Adam                 \\ \bottomrule
+		$\alpha$                       & $[1 \times 10^{-10}, 1]$               & Log Uniform        & $8 \times 10^{-5}$   \\
+		Learning rate                  & $[1 \times 10^{-6}, 1 \times 10^{-2}]$ & Log Uniform        & $2.2 \times 10^{-4}$ \\
+		Optimizer                      & \{SGD, Adam\}                          & Categorical        & Adam                 \\ \bottomrule
 	\end{tabular}
 	}
 	\caption{Hyperparameter tuning results. Each section covers a different grouping of hyperparameters affecting a different component or module of DARLInG.}

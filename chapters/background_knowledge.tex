@@ -269,23 +269,23 @@ where $t_{i}$ is the timestamp of a given value of $x_i$ and $N$ a constant fact
 This is then transformed into the matrix $G$ of size $n \times n$ as
 
 \begin{align}
-	G &= \begin{Bmatrix}
+	G &= \begin{bmatrix}
 		\cos(\phi_1 + \phi_1) & \cdots & \cos(\phi_1 + \phi_n) \\
 		\cos(\phi_2 + \phi_1) & \cdots & \cos(\phi_2 + \phi_n) \\
 		\vdots                & \ddots & \vdots \\
 		\cos(\phi_n + \phi_1) & \cdots & \cos(\phi_n + \phi_n)
-	\end{Bmatrix}
+	\end{bmatrix}
 	&= \tilde{X}' \cdot \tilde{X} - \sqrt{I - \tilde{X}^2}' \cdot \sqrt{I - \tilde{X}^2}
 \end{align}
 where $I$ is the unit row vector $[1, 1, \ldots, 1]$.
 Defining the inner product $< x,y> = x \cdot y - \sqrt{1 - x^2} \cdot \sqrt{1-y^2}$ results in G being a Gramian matrix with
 \begin{equation}
-	G = \begin{Bmatrix}
+	G = \begin{bmatrix}
 		< \tilde{x}_1, \tilde{x}_1 > & \cdots & < \tilde{x}_1, \tilde{x}_n >\\
 		< \tilde{x}_2, \tilde{x}_1 > & \cdots & < \tilde{x}_2, \tilde{x}_n > \\
 		\vdots                       & \ddots & \vdots \\
 		< \tilde{x}_n \tilde{x}_1 > & \cdots & < \tilde{x}_n, \tilde{x}_n >
-	\end{Bmatrix}
+	\end{bmatrix}
 \end{equation}
 
 The GAF provides a way to preserve temporal dependencies, with time increasing along the diagonal from the top left to the bottom right.
@@ -299,12 +299,12 @@ A matrix $M$ of size $n \times n$ is then constructed where $M_{ij}$ denotes the
 Let the quantile bins that contain the data at timestep $i$ and $j$ be $q_k$ and $q_l$, respectively.
 This formally defines $M$ as
 \begin{equation}
-	M = \begin{Bmatrix}
+	M = \begin{bmatrix}
 			w_{kl|x_1 \in q_k, x_1 \in q_l} & \cdots & w_{kl|x_1 \in q_k, x_n \in q_l} \\
 			w_{kl|x_2 \in q_k, x_1 \in q_l} & \cdots & w_{kl|x_2 \in q_k, x_n \in q_l} \\
 			\vdots                          & \ddots & \vdots                          \\
 			w_{kl|x_n \in q_k, x_1 \in q_l} & \cdots & w_{kl|x_n \in q_k, x_n \in q_l}
-		\end{Bmatrix}
+		\end{bmatrix}
 \end{equation}
 $M$ is then an image of size $n \times n$ and can be interpreted as representing the probabilities of any state transitioning into another state over time.
 

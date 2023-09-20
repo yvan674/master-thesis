@@ -302,7 +302,7 @@ We experiment with two different reward functions: One we call the \textit{contr
 Let $\varrho$ denote some metric subject to minimization to measure the gesture classification performance of a multi-task learning module given the gesture classification prediction $\hat{y_{c}}$.
 The contrastive reward function $R_{CON}$ is then 
 \begin{equation}
-	R_{CON}(\hat{y}_{c,r}, \hat{y}_{c,\emptyset}, y_c, \gamma) = \gamma \cdot \left(\varrho\left(\hat{y}_{c,\emptyset} - y_c\right(\phi\left(\hat{y}_{c,r}, y_c\right))\right)
+	R_{CON}(\hat{y}_{c,r}, \hat{y}_{c,\emptyset}, y_c, \gamma) = \gamma \cdot \left(\varrho\left(\hat{y}_{c,\emptyset},y_c\right) - \varrho\left(\hat{y}_{c,r}, y_c\right)\right)
 \end{equation}
 where $y_c$ is the ground truth gesture classification, $\hat{y}_{c,r} $ the predicted gesture from the embed head, $\hat{y}_{c,\emptyset}$ the predicted gesture from the null head, and $\gamma$ a multiplier factor chosen during hyperparameter tuning.
 In practice, we use cross entropy loss as our performance metric $\varrho$.
@@ -330,10 +330,10 @@ We then apply a threshold to the difference, where any value below $\alpha$ is z
 Finally, we sum together all differences and divide by the number of non-zero values and add the contrastive loss.
 Formally, this is given by
 \begin{align}
-	R_{DCM} (\hat{y}_{c,r}, \hat{y}_{c,\emptyset}, y_c, \boldsymbol{d}_r, \gamma) &= \gamma \cdot
+	R_{DMC} (\hat{y}_{c,r}, \hat{y}_{c,\emptyset}, y_c, \boldsymbol{d}_r, \gamma) &= \gamma \cdot
 		\frac{\sum_{i \leq e} \sum_{j \leq e, j > i} \left(|d_{r,i} - d_{r,j}|\right) \cdot \mathds{1}_{>\alpha}\left(|d_{r,i} - d_{r,j}|\right)}
 		     {\sum_{i \leq e} \sum_{j \leq e, j > i} \mathds{1}_{>\alpha}\left(|d_{r,i} - d_{r,j}|\right)}
-		+ R_{CON}(\hat{y}_{c,r}, \hat{y}_{c,\emptyset}, y_c) \\
+		+ R_{CON}(\hat{y}_{c,r}, \hat{y}_{c,\emptyset}, y_c, \gamma) \\
 	\text{where } \mathds{1}_A(x) &:= \begin{cases}
 		1, & x \in A\\
 		0, & x \notin A
